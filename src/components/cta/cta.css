@@ -1,0 +1,63 @@
+.cta{
+    background:
+    linear-gradient(rgba(227,6,19,.82),rgba(0,0,0,.82)),
+    url("/hero.jpg");
+
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+
+    padding:120px 8%;
+    text-align:center;
+    color:white;
+}
+
+.cta h2{
+    font-size:48px;
+    margin-bottom:25px;
+    font-weight:700;
+}
+
+.cta p{
+    width:70%;
+    margin:auto;
+    font-size:20px;
+    line-height:1.8;
+    margin-bottom:40px;
+}
+
+.cta-buttons{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.btn-primary{
+    background:#FFD100;
+    color:#111;
+    padding:16px 38px;
+    border-radius:40px;
+    font-size:18px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-primary:hover{
+    background:#fff;
+}
+
+.btn-secondary{
+    border:2px solid #FFD100;
+    color:#fff;
+    padding:16px 38px;
+    border-radius:40px;
+    font-size:18px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-secondary:hover{
+    background:#FFD100;
+    color:#111;
+}
