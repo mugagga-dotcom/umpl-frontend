@@ -37,6 +37,14 @@ function Footer() {
     fetchSettings();
   }, []);
 
+  const socialLinks = [
+    { key: 'facebook_url', icon: FaFacebookF, label: 'Facebook' },
+    { key: 'twitter_url', icon: FaTwitter, label: 'Twitter' },
+    { key: 'instagram_url', icon: FaInstagram, label: 'Instagram' },
+    { key: 'linkedin_url', icon: FaLinkedinIn, label: 'LinkedIn' },
+    { key: 'youtube_url', icon: FaYoutube, label: 'YouTube' },
+  ];
+
   return (
     <footer className="footer">
 
@@ -112,41 +120,26 @@ function Footer() {
 
           <div className="social-icons">
 
-            {socialMedia.facebook_url && (
-              <a href={socialMedia.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                <FaFacebookF />
-              </a>
-            )}
+            {socialLinks.map((social) => {
+              const IconComponent = social.icon;
+              const url = socialMedia[social.key];
+              const isActive = !!url;
 
-            {socialMedia.twitter_url && (
-              <a href={socialMedia.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-                <FaTwitter />
-              </a>
-            )}
-
-            {socialMedia.instagram_url && (
-              <a href={socialMedia.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                <FaInstagram />
-              </a>
-            )}
-
-            {socialMedia.linkedin_url && (
-              <a href={socialMedia.linkedin_url} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <FaLinkedinIn />
-              </a>
-            )}
-
-            {socialMedia.youtube_url && (
-              <a href={socialMedia.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                <FaYoutube />
-              </a>
-            )}
-
-            {/* Show placeholder message if no social media links are set */}
-            {!socialMedia.facebook_url && !socialMedia.twitter_url && !socialMedia.instagram_url && 
-             !socialMedia.linkedin_url && !socialMedia.youtube_url && (
-              <p className="social-placeholder">Social media links will be added soon!</p>
-            )}
+              return (
+                <a
+                  key={social.key}
+                  href={url || '#'}
+                  target={isActive ? '_blank' : undefined}
+                  rel={isActive ? 'noopener noreferrer' : undefined}
+                  aria-label={social.label}
+                  className={`social-link ${isActive ? 'active' : 'inactive'}`}
+                  onClick={(e) => !isActive && e.preventDefault()}
+                  title={isActive ? `Visit our ${social.label}` : `${social.label} link coming soon`}
+                >
+                  <IconComponent />
+                </a>
+              );
+            })}
 
           </div>
 

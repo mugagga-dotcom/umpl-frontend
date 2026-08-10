@@ -80,6 +80,29 @@
     color:black;
 }
 
+.social-icons a.active {
+    background: #E30613;
+    cursor: pointer;
+}
+
+.social-icons a.active:hover {
+    background: #FFD100;
+    color: black;
+    transform: translateY(-3px);
+}
+
+.social-icons a.inactive {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.social-icons a.inactive:hover {
+    background: #555;
+    color: white;
+    transform: none;
+}
+
 .social-placeholder {
     color: #ccc;
     font-size: 14px;
