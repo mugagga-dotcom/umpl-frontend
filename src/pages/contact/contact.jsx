@@ -1,6 +1,7 @@
 import "./contact.css";
 import { useState, useEffect } from "react";
 import settingsService from "../../Services/settingsService";
+import contactService from "../../Services/contactService";
 import {
   FaPhoneAlt,
   FaEnvelope,
@@ -21,6 +22,19 @@ function Contact() {
     youtube_url: null,
   });
 
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    inquiry_type: '',
+    subject: '',
+    message: ''
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   useEffect(() => {
     const fetchSettings = async () => {
       try {
@@ -35,6 +49,39 @@ function Contact() {
 
     fetchSettings();
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    try {
+      await contactService.sendMessage(formData);
+      setSuccessMessage('Thank you! Your message has been sent successfully. We will get back to you soon.');
+      setFormData({
+        full_name: '',
+        email: '',
+        phone: '',
+        inquiry_type: '',
+        subject: '',
+        message: ''
+      });
+    } catch (error) {
+      setErrorMessage('Failed to send your message. Please try again later.');
+      console.error('Error sending message:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="contact-page">
@@ -134,26 +181,51 @@ function Contact() {
             Whether you're a media presenter looking to join UMPL or have questions about our services, we're here to help.
           </p>
 
-          <form>
+          {successMessage && (
+            <div className="success-message">
+              {successMessage}
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="error-message">
+              {errorMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
 
             <input
               type="text"
+              name="full_name"
               placeholder="Full Name"
+              value={formData.full_name}
+              onChange={handleInputChange}
               required
             />
 
             <input
               type="email"
+              name="email"
               placeholder="Email Address"
+              value={formData.email}
+              onChange={handleInputChange}
               required
             />
 
             <input
               type="tel"
+              name="phone"
               placeholder="Phone Number (Optional)"
+              value={formData.phone}
+              onChange={handleInputChange}
             />
 
-            <select>
+            <select
+              name="inquiry_type"
+              value={formData.inquiry_type}
+              onChange={handleInputChange}
+            >
               <option value="">Select Inquiry Type</option>
               <option value="membership">Membership Inquiry</option>
               <option value="partnership">Partnership Opportunity</option>
@@ -164,18 +236,27 @@ function Contact() {
 
             <input
               type="text"
+              name="subject"
               placeholder="Subject"
+              value={formData.subject}
+              onChange={handleInputChange}
               required
             />
 
             <textarea
+              name="message"
               rows="6"
               placeholder="Write your message here..."
+              value={formData.message}
+              onChange={handleInputChange}
               required
             ></textarea>
 
-            <button type="submit">
-              Send Message
+            <button 
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? 'Sending...' : 'Send Message'}
             </button>
 
           </form>

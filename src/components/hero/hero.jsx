@@ -1,6 +1,9 @@
 import "./hero.css";
+import { useNavigate } from "react-router-dom";
 
 function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section className="hero">
       <div className="overlay">
@@ -14,10 +17,17 @@ function Hero() {
         </p>
 
         <div className="hero-buttons">
-          <button className="btn-secondary" style={{ marginRight: '15px' }}>
+          <button 
+            className="btn-secondary" 
+            style={{ marginRight: '15px' }}
+            onClick={() => navigate("/about")}
+          >
             Learn More
           </button>
-          <button className="btn-secondary">
+          <button 
+            className="btn-secondary"
+            onClick={() => navigate("/contact")}
+          >
             Contact Us
           </button>
         </div>
