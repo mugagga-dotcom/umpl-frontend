@@ -15,7 +15,13 @@ export const authService = {
       });
       return response.data;
     } catch (error) {
-      const message = error.response?.data?.message || 'Login failed';
+      console.log('Login error details:', error);
+      
+      if (!error.response) {
+        throw new Error('Cannot connect to server. Make sure the backend is running on http://localhost:5000');
+      }
+      
+      const message = error.response?.data?.error || error.response?.data?.message || 'Login failed';
       throw new Error(message);
     }
   },
