@@ -1,4 +1,4 @@
-import "./Executive.css";
+import "./executive.css";
 
 const members = [
   {

@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/navbar/navbar";
 
-import Home from "./pages/Home/Home";
-import About from "./pages/About/About";
-import VisionMission from "./pages/VisionMission/VisionMission";
-import Executive from "./pages/Executive/Executive";
-import Contact from "./pages/Contact/Contact";
+import Home from "./pages/home/home";
+import About from "./pages/about/about";
+import VisionMission from "./pages/visionmission/visionmission";
+import Executive from "./pages/executive/executive";
 import Gallery from "./pages/Gallery/Gallery";
+import Contact from "./pages/contact/contact";
 
 function App() {
   return (
@@ -20,8 +20,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/vision" element={<VisionMission />} />
         <Route path="/executive" element={<Executive />} />
-        <Route path="/contact" element={<Contact />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
 
     </BrowserRouter>

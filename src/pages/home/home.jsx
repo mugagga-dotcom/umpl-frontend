@@ -1,10 +1,10 @@
-import Hero from "../../components/Hero/Hero";
-import Welcome from "../../components/Welcome/Welcome";
-import VisionSection from "../../components/VisionSection/VisionSection";
-import CoreValues from "../../components/CoreValues/CoreValues";
-import Executive from "../../components/Executive/Executive";
-import CTA from "../../components/CTA/CTA";
-import Footer from "../../components/Footer/Footer";
+import Hero from "../../components/hero/hero";
+import Welcome from "../../components/welcome/welcome";
+import VisionSection from "../../components/visionsection/visionsection";
+import CoreValues from "../../components/corevalues/corevalues";
+import Executive from "../../components/executive/executive";
+import CTA from "../../components/cta/cta";
+import Footer from "../../components/footer/footer";
 
 function Home() {
   return (

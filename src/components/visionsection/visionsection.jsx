@@ -1,4 +1,4 @@
-import "./VisionSection.css";
+import "./visionsection.css";
 import { FaEye, FaBullseye, FaCheckCircle, FaStar, FaFlag } from "react-icons/fa";
 
 function VisionSection() {

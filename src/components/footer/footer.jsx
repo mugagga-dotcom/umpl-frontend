@@ -1,4 +1,6 @@
-import "./Footer.css";
+import "./footer.css";
+import { useState, useEffect } from "react";
+import settingsService from "../../Services/settingsService";
 
 import {
   FaFacebookF,
@@ -8,9 +10,33 @@ import {
   FaEnvelope,
   FaPhone,
   FaMapMarkerAlt,
+  FaYoutube,
 } from "react-icons/fa";
 
 function Footer() {
+  const [socialMedia, setSocialMedia] = useState({
+    facebook_url: null,
+    twitter_url: null,
+    instagram_url: null,
+    linkedin_url: null,
+    youtube_url: null,
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const settings = await settingsService.getSettings();
+        if (settings.social_media) {
+          setSocialMedia(settings.social_media);
+        }
+      } catch (error) {
+        console.error('Failed to load social media settings:', error);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
   return (
     <footer className="footer">
 
@@ -43,7 +69,7 @@ function Footer() {
     
             <li><a href="/about">About UMPL</a></li>
 
-            <li><a href="/vision"></a>Strategy</li>
+            <li><a href="/vision">Strategy</a></li>
 
             <li><a href="/executive">Executive Committee</a></li>
 
@@ -61,7 +87,7 @@ function Footer() {
 
           <p>
             <FaMapMarkerAlt className="footer-icon" />
-           Plot 2 Cropration Rise
+           Plot 2 Corporation Rise
           </p>
 
           <p>
@@ -72,8 +98,8 @@ function Footer() {
 
           <p>
             <FaEnvelope className="footer-icon" />
-            P.O.Box3156 , Kampala, Uganda
-            ugandamediapresenterleague@gmail.com
+            P.O.Box3156 , Kampala, Uganda<br/>
+            ugandamediapresentersleague@gmail.com
           </p>
 
         </div>
@@ -86,13 +112,41 @@ function Footer() {
 
           <div className="social-icons">
 
-            <a href="#"><FaFacebookF /></a>
+            {socialMedia.facebook_url && (
+              <a href={socialMedia.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                <FaFacebookF />
+              </a>
+            )}
 
-            <a href="#"><FaTwitter /></a>
+            {socialMedia.twitter_url && (
+              <a href={socialMedia.twitter_url} target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                <FaTwitter />
+              </a>
+            )}
 
-            <a href="#"><FaInstagram /></a>
+            {socialMedia.instagram_url && (
+              <a href={socialMedia.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <FaInstagram />
+              </a>
+            )}
 
-            <a href="#"><FaLinkedinIn /></a>
+            {socialMedia.linkedin_url && (
+              <a href={socialMedia.linkedin_url} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <FaLinkedinIn />
+              </a>
+            )}
+
+            {socialMedia.youtube_url && (
+              <a href={socialMedia.youtube_url} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <FaYoutube />
+              </a>
+            )}
+
+            {/* Show placeholder message if no social media links are set */}
+            {!socialMedia.facebook_url && !socialMedia.twitter_url && !socialMedia.instagram_url && 
+             !socialMedia.linkedin_url && !socialMedia.youtube_url && (
+              <p className="social-placeholder">Social media links will be added soon!</p>
+            )}
 
           </div>
 

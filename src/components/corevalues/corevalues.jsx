@@ -1,4 +1,4 @@
-import "./CoreValues.css";
+import "./corevalues.css";
 import {
   FaUsers,
   FaHandshake,

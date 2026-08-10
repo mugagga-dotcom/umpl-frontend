@@ -1,4 +1,4 @@
-import "./CTA.css";
+import "./cta.css";
 
 function CTA() {
   return (

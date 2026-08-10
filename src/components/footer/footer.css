@@ -80,6 +80,18 @@
     color:black;
 }
 
+.social-placeholder {
+    color: #ccc;
+    font-size: 14px;
+    font-style: italic;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+    background: #1a1a1a;
+    border-radius: 8px;
+    border: 1px dashed #333;
+}
+
 .footer-bottom{
     border-top:1px solid #333;
     text-align:center;
