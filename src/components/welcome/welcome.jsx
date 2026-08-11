@@ -26,7 +26,6 @@ function Welcome() {
             collaboration among media practitioners while contributing to the
             growth of Uganda's media industry.
           </p>
-          <button>Read More</button>
         
         </div>
 
