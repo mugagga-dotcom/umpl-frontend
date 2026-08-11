@@ -618,6 +618,125 @@
   transform: translateY(-4px);
 }
 
+/* Notifications */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-success {
+  background: #d4edda;
+  color: #155724;
+  border: 2px solid #c3e6cb;
+}
+
+.notification-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 2px solid #f5c6cb;
+}
+
+.notification-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 2px solid #bee5eb;
+}
+
+.notification button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.notification button:hover {
+  opacity: 1;
+}
+
+/* Messages List */
+.messages-list {
+  display: grid;
+  gap: 16px;
+}
+
+.message-item {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.message-item:hover {
+  border-color: #e30613;
+  box-shadow: 0 4px 12px rgba(227, 6, 19, 0.1);
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.message-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #111;
+}
+
+.message-date {
+  font-size: 0.85rem;
+  color: #999;
+  font-weight: 500;
+}
+
+.message-email {
+  margin: 0 0 8px 0;
+  color: #e30613;
+  font-size: 0.95rem;
+}
+
+.message-subject {
+  margin: 0 0 8px 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.message-body {
+  margin: 0;
+  color: #333;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .admin-nav {

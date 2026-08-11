@@ -6,7 +6,7 @@ import galleryService from "../../Services/galleryService";
 import { 
   FaSignOutAlt, FaImages, FaCog, FaEnvelope, FaUsers, FaPlus, FaTrash, 
   FaGlobe, FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube,
-  FaCheck
+  FaCheck, FaTimes
 } from "react-icons/fa";
 
 function Admin() {
@@ -14,6 +14,7 @@ function Admin() {
   const [user, setUser] = useState(null);
   const [galleryCount, setGalleryCount] = useState(0);
   const [galleryItems, setGalleryItems] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showGalleryForm, setShowGalleryForm] = useState(false);
@@ -23,6 +24,15 @@ function Admin() {
     description: "",
     image_url: ""
   });
+  const [settingsData, setSettingsData] = useState({
+    facebook_url: "",
+    twitter_url: "",
+    instagram_url: "",
+    linkedin_url: "",
+    youtube_url: ""
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     const currentUser = authService.getCurrentUser();
@@ -37,14 +47,67 @@ function Admin() {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const gallery = await galleryService.getGalleryItems();
+      
+      // Load gallery items
+      const gallery = await galleryService.getGalleryItems().catch(() => []);
       setGalleryItems(gallery || []);
       setGalleryCount(gallery?.length || 0);
+
+      // Load settings
+      await loadSettings();
+
+      // Load contact messages
+      await loadMessages();
     } catch (error) {
       console.error("Error loading dashboard data:", error);
+      showNotification("error", "Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadSettings = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/settings`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const settings = data.data || data;
+        setSettingsData({
+          facebook_url: settings.social_media?.facebook_url || "",
+          twitter_url: settings.social_media?.twitter_url || "",
+          instagram_url: settings.social_media?.instagram_url || "",
+          linkedin_url: settings.social_media?.linkedin_url || "",
+          youtube_url: settings.social_media?.youtube_url || ""
+        });
+      }
+    } catch (error) {
+      console.error("Error loading settings:", error);
+    }
+  };
+
+  const loadMessages = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/contact/messages`, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMessages(Array.isArray(data) ? data : data.messages || []);
+      }
+    } catch (error) {
+      console.error("Error loading messages:", error);
+    }
+  };
+
+  const showNotification = (type, text, duration = 3000) => {
+    setNotification({ type, text });
+    setTimeout(() => setNotification(null), duration);
   };
 
   const handleLogout = () => {
@@ -64,9 +127,9 @@ function Admin() {
       setFormData({ title: "", description: "", image_url: "" });
       setShowGalleryForm(false);
       loadDashboardData();
-      alert("✅ Image added to gallery successfully!");
+      showNotification("success", "✅ Image added to gallery successfully!");
     } catch (error) {
-      alert("❌ Error adding image: " + error.message);
+      showNotification("error", "❌ Error adding image: " + error.message);
     }
   };
 
@@ -75,9 +138,9 @@ function Admin() {
       try {
         await galleryService.deleteGalleryItem(id);
         loadDashboardData();
-        alert("✅ Image deleted successfully!");
+        showNotification("success", "✅ Image deleted successfully!");
       } catch (error) {
-        alert("❌ Error deleting image: " + error.message);
+        showNotification("error", "❌ Error deleting image: " + error.message);
       }
     }
   };
@@ -90,6 +153,49 @@ function Admin() {
     }));
   };
 
+  const handleSettingsChange = (e) => {
+    const { name, value } = e.target;
+    setSettingsData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSaveSettings = async (e) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/settings`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({
+          social_media: {
+            facebook_url: settingsData.facebook_url,
+            twitter_url: settingsData.twitter_url,
+            instagram_url: settingsData.instagram_url,
+            linkedin_url: settingsData.linkedin_url,
+            youtube_url: settingsData.youtube_url
+          }
+        })
+      });
+
+      if (response.ok) {
+        showNotification("success", "✅ Settings saved successfully!");
+        setShowSettingsForm(false);
+      } else {
+        const error = await response.json();
+        showNotification("error", "❌ Error saving settings: " + (error.message || "Unknown error"));
+      }
+    } catch (error) {
+      showNotification("error", "❌ Error saving settings: " + error.message);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="admin-container">
@@ -100,6 +206,16 @@ function Admin() {
 
   return (
     <div className="admin-page">
+      {/* Notification */}
+      {notification && (
+        <div className={`notification notification-${notification.type}`}>
+          <span>{notification.text}</span>
+          <button onClick={() => setNotification(null)}>
+            <FaTimes />
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <header className="admin-header">
         <div className="header-content">
@@ -143,7 +259,7 @@ function Admin() {
           className={`nav-tab ${activeTab === "messages" ? "active" : ""}`}
           onClick={() => setActiveTab("messages")}
         >
-          <FaEnvelope /> Messages
+          <FaEnvelope /> Messages ({messages.length})
         </button>
       </nav>
 
@@ -192,6 +308,7 @@ function Admin() {
                 </div>
                 <div className="card-content">
                   <h3>Messages</h3>
+                  <p className="card-number">{messages.length}</p>
                   <p className="card-label">Contact Forms</p>
                   <a className="card-link">View Messages →</a>
                 </div>
@@ -347,37 +464,104 @@ function Admin() {
         {/* Settings View */}
         {activeTab === "settings" && (
           <div className="content-section">
-            <h2>Site Settings</h2>
+            <div className="section-header">
+              <h2>Site Settings</h2>
+              <button 
+                className="primary-btn"
+                onClick={() => setShowSettingsForm(!showSettingsForm)}
+              >
+                {showSettingsForm ? "Cancel" : <><FaCog /> Edit Settings</>}
+              </button>
+            </div>
+
+            {showSettingsForm && (
+              <div className="form-container">
+                <h3>Update Social Media Links</h3>
+                <form onSubmit={handleSaveSettings}>
+                  <div className="form-group">
+                    <label><FaFacebook /> Facebook URL</label>
+                    <input 
+                      type="url" 
+                      name="facebook_url"
+                      value={settingsData.facebook_url}
+                      onChange={handleSettingsChange}
+                      placeholder="https://facebook.com/yourpage" 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label><FaTwitter /> Twitter URL</label>
+                    <input 
+                      type="url" 
+                      name="twitter_url"
+                      value={settingsData.twitter_url}
+                      onChange={handleSettingsChange}
+                      placeholder="https://twitter.com/yourpage" 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label><FaInstagram /> Instagram URL</label>
+                    <input 
+                      type="url" 
+                      name="instagram_url"
+                      value={settingsData.instagram_url}
+                      onChange={handleSettingsChange}
+                      placeholder="https://instagram.com/yourpage" 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label><FaLinkedin /> LinkedIn URL</label>
+                    <input 
+                      type="url" 
+                      name="linkedin_url"
+                      value={settingsData.linkedin_url}
+                      onChange={handleSettingsChange}
+                      placeholder="https://linkedin.com/company/yourpage" 
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label><FaYoutube /> YouTube URL</label>
+                    <input 
+                      type="url" 
+                      name="youtube_url"
+                      value={settingsData.youtube_url}
+                      onChange={handleSettingsChange}
+                      placeholder="https://youtube.com/channel/yourchannel" 
+                    />
+                  </div>
+                  <button type="submit" className="primary-btn" disabled={savingSettings}>
+                    {savingSettings ? "Saving..." : <><FaCheck /> Save Settings</>}
+                  </button>
+                </form>
+              </div>
+            )}
+
             <div className="settings-container">
               <div className="settings-card">
-                <h3>Social Media Links</h3>
-                <p>Add your social media profiles to make them visible on your website:</p>
-                <div className="form-group">
-                  <label><FaFacebook /> Facebook URL</label>
-                  <input type="url" placeholder="https://facebook.com/yourpage" />
+                <h3>Current Social Media Links</h3>
+                <div className="info-item">
+                  <span className="label"><FaFacebook /> Facebook:</span>
+                  <span className="value">{settingsData.facebook_url || "Not set"}</span>
                 </div>
-                <div className="form-group">
-                  <label><FaTwitter /> Twitter URL</label>
-                  <input type="url" placeholder="https://twitter.com/yourpage" />
+                <div className="info-item">
+                  <span className="label"><FaTwitter /> Twitter:</span>
+                  <span className="value">{settingsData.twitter_url || "Not set"}</span>
                 </div>
-                <div className="form-group">
-                  <label><FaInstagram /> Instagram URL</label>
-                  <input type="url" placeholder="https://instagram.com/yourpage" />
+                <div className="info-item">
+                  <span className="label"><FaInstagram /> Instagram:</span>
+                  <span className="value">{settingsData.instagram_url || "Not set"}</span>
                 </div>
-                <div className="form-group">
-                  <label><FaLinkedin /> LinkedIn URL</label>
-                  <input type="url" placeholder="https://linkedin.com/company/yourpage" />
+                <div className="info-item">
+                  <span className="label"><FaLinkedin /> LinkedIn:</span>
+                  <span className="value">{settingsData.linkedin_url || "Not set"}</span>
                 </div>
-                <div className="form-group">
-                  <label><FaYoutube /> YouTube URL</label>
-                  <input type="url" placeholder="https://youtube.com/channel/yourchannel" />
+                <div className="info-item">
+                  <span className="label"><FaYoutube /> YouTube:</span>
+                  <span className="value">{settingsData.youtube_url || "Not set"}</span>
                 </div>
-                <button className="primary-btn"><FaCheck /> Save Settings</button>
               </div>
 
               <div className="settings-card">
                 <h3>Site Information</h3>
-                <p>Current site configuration:</p>
                 <div className="info-item">
                   <span className="label">Site Name:</span>
                   <span className="value">Uganda Media Presenters League (UMPL)</span>
@@ -402,14 +586,33 @@ function Admin() {
         {/* Messages View */}
         {activeTab === "messages" && (
           <div className="content-section">
-            <h2>Contact Messages</h2>
+            <h2>Contact Messages ({messages.length})</h2>
             <div className="messages-container">
-              <p className="info-text">Messages from visitors using the contact form will appear here.</p>
-              <div className="message-placeholder">
-                <FaEnvelope className="placeholder-icon" />
-                <p>No messages yet</p>
-                <a href="/contact" className="btn-secondary">View Contact Page</a>
-              </div>
+              {messages.length === 0 ? (
+                <div className="message-placeholder">
+                  <FaEnvelope className="placeholder-icon" />
+                  <p>No messages yet</p>
+                  <a href="/contact" className="btn-secondary">View Contact Page</a>
+                </div>
+              ) : (
+                <div className="messages-list">
+                  {messages.map((msg, idx) => (
+                    <div key={msg.id || idx} className="message-item">
+                      <div className="message-header">
+                        <h4>{msg.name}</h4>
+                        <span className="message-date">
+                          {new Date(msg.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="message-email"><strong>Email:</strong> {msg.email}</p>
+                      {msg.subject && (
+                        <p className="message-subject"><strong>Subject:</strong> {msg.subject}</p>
+                      )}
+                      <p className="message-body">{msg.message}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

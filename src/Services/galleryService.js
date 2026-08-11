@@ -59,6 +59,28 @@ export const galleryService = {
       console.error(`Failed to delete gallery item ${id}:`, error);
       throw error;
     }
+  },
+
+  // Get site settings
+  getSettings: async () => {
+    try {
+      const response = await api.get('/settings');
+      return response.data.data || response.data;
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+      throw error;
+    }
+  },
+
+  // Update site settings (admin only)
+  updateSettings: async (settingsData) => {
+    try {
+      const response = await api.put('/settings', settingsData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update settings:', error);
+      throw error;
+    }
   }
 };
 
