@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../../Services/authService";
 import galleryService from "../../Services/galleryService";
-import { FaSignOutAlt, FaImages, FaCog, FaEnvelope, FaUsers, FaTimes } from "react-icons/fa";
+import { 
+  FaSignOutAlt, FaImages, FaCog, FaEnvelope, FaUsers, FaPlus, FaTrash, 
+  FaGlobe, FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube,
+  FaCheck
+} from "react-icons/fa";
 
 function Admin() {
   const navigate = useNavigate();
@@ -212,26 +216,26 @@ function Admin() {
                   <h4>Add Gallery Image</h4>
                   <p>Upload new images to the gallery</p>
                   <button 
-                    className="action-btn"
+                    className="primary-btn"
                     onClick={() => { setActiveTab("gallery"); setShowGalleryForm(true); }}
                   >
-                    Upload Image
+                    <FaPlus /> Upload Image
                   </button>
                 </div>
                 <div className="action-item">
                   <h4>Update Social Media</h4>
                   <p>Add or update social media links</p>
                   <button 
-                    className="action-btn"
+                    className="primary-btn"
                     onClick={() => { setActiveTab("settings"); setShowSettingsForm(true); }}
                   >
-                    Update Links
+                    <FaGlobe /> Update Links
                   </button>
                 </div>
                 <div className="action-item">
                   <h4>View Website</h4>
                   <p>Preview your live website</p>
-                  <a href="/" className="action-btn">Visit Site</a>
+                  <a href="/" className="primary-btn"><FaGlobe /> Visit Site</a>
                 </div>
               </div>
             </section>
@@ -242,17 +246,17 @@ function Admin() {
                 <div className="status-item">
                   <span className="status-dot active"></span>
                   <span>Backend API</span>
-                  <span className="status-text">Connected</span>
+                  <span className="status-text"><FaCheck /> Connected</span>
                 </div>
                 <div className="status-item">
                   <span className="status-dot active"></span>
                   <span>Database</span>
-                  <span className="status-text">Connected</span>
+                  <span className="status-text"><FaCheck /> Connected</span>
                 </div>
                 <div className="status-item">
                   <span className="status-dot active"></span>
                   <span>Authentication</span>
-                  <span className="status-text">Verified</span>
+                  <span className="status-text"><FaCheck /> Verified</span>
                 </div>
               </div>
             </section>
@@ -268,7 +272,7 @@ function Admin() {
                 className="primary-btn"
                 onClick={() => setShowGalleryForm(!showGalleryForm)}
               >
-                {showGalleryForm ? "Cancel" : "+ Add Image"}
+                {showGalleryForm ? "Cancel" : <><FaPlus /> Add Image</>}
               </button>
             </div>
 
@@ -308,7 +312,7 @@ function Admin() {
                       required
                     />
                   </div>
-                  <button type="submit" className="primary-btn">Add Image</button>
+                  <button type="submit" className="primary-btn"><FaCheck /> Add Image</button>
                 </form>
               </div>
             )}
@@ -329,7 +333,7 @@ function Admin() {
                           className="delete-btn"
                           onClick={() => handleDeleteGalleryImage(item.id)}
                         >
-                          Delete
+                          <FaTrash /> Delete
                         </button>
                       </div>
                     </div>
@@ -349,26 +353,26 @@ function Admin() {
                 <h3>Social Media Links</h3>
                 <p>Add your social media profiles to make them visible on your website:</p>
                 <div className="form-group">
-                  <label>Facebook URL</label>
+                  <label><FaFacebook /> Facebook URL</label>
                   <input type="url" placeholder="https://facebook.com/yourpage" />
                 </div>
                 <div className="form-group">
-                  <label>Twitter URL</label>
+                  <label><FaTwitter /> Twitter URL</label>
                   <input type="url" placeholder="https://twitter.com/yourpage" />
                 </div>
                 <div className="form-group">
-                  <label>Instagram URL</label>
+                  <label><FaInstagram /> Instagram URL</label>
                   <input type="url" placeholder="https://instagram.com/yourpage" />
                 </div>
                 <div className="form-group">
-                  <label>LinkedIn URL</label>
+                  <label><FaLinkedin /> LinkedIn URL</label>
                   <input type="url" placeholder="https://linkedin.com/company/yourpage" />
                 </div>
                 <div className="form-group">
-                  <label>YouTube URL</label>
+                  <label><FaYoutube /> YouTube URL</label>
                   <input type="url" placeholder="https://youtube.com/channel/yourchannel" />
                 </div>
-                <button className="primary-btn">Save Settings</button>
+                <button className="primary-btn"><FaCheck /> Save Settings</button>
               </div>
 
               <div className="settings-card">
