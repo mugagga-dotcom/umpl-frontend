@@ -9,7 +9,8 @@ export const contactService = {
   // Send a contact message
   sendMessage: async (messageData) => {
     try {
-      const response = await api.post('/contact', messageData);
+      // Added trailing slash after /contact/
+      const response = await api.post('/contact/', messageData);
       return response.data;
     } catch (error) {
       console.error('Failed to send contact message:', error);

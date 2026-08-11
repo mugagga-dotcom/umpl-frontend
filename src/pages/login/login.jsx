@@ -1,4 +1,4 @@
-import "./Login.css";
+import "./login.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa";

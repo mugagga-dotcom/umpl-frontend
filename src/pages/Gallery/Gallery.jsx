@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./gallery.css";
+import "./Gallery.css";
 import galleryService from "../../Services/galleryService";
 
 const Gallery = () => {

@@ -1,29 +1,85 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/navbar/navbar";
+import Navbar from "./components/Navbar/Navbar";
 
-import Home from "./pages/home/home";
-import About from "./pages/about/about";
-import VisionMission from "./pages/visionmission/visionmission";
-import Executive from "./pages/executive/executive";
-import Gallery from "./pages/Gallery/Gallery";
-import Contact from "./pages/contact/contact";
-import Login from "./pages/login/login";
+import Home from "./pages/Home/Home";
+import About from "./pages/About/About";
+import VisionMission from "./pages/VisionMission/VisionMission";
+import Executive from "./pages/Executive/Executive";
+import Contact from "./pages/Contact/Contact";
+import Login from "./pages/Login/Login";
+import Admin from "./pages/Admin/Admin";
+
+function PublicLayout({ children }) {
+  return (
+    <>
+      <Navbar />
+      {children}
+    </>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
 
-      <Navbar />
-
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/vision" element={<VisionMission />} />
-        <Route path="/executive" element={<Executive />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
+
+        <Route
+          path="/"
+          element={
+            <PublicLayout>
+              <Home />
+            </PublicLayout>
+          }
+        />
+
+        <Route
+          path="/about"
+          element={
+            <PublicLayout>
+              <About />
+            </PublicLayout>
+          }
+        />
+
+        <Route
+          path="/vision"
+          element={
+            <PublicLayout>
+              <VisionMission />
+            </PublicLayout>
+          }
+        />
+
+        <Route
+          path="/executive"
+          element={
+            <PublicLayout>
+              <Executive />
+            </PublicLayout>
+          }
+        />
+
+        <Route
+          path="/contact"
+          element={
+            <PublicLayout>
+              <Contact />
+            </PublicLayout>
+          }
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/admin"
+          element={<Admin />}
+        />
+
       </Routes>
 
     </BrowserRouter>

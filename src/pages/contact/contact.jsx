@@ -25,7 +25,6 @@ function Contact() {
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
-    phone: '',
     inquiry_type: '',
     subject: '',
     message: ''
@@ -60,24 +59,37 @@ function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.full_name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setErrorMessage("Please fill in all required fields (Name, Email, Message).");
+      return;
+    }
+
     setLoading(true);
     setSuccessMessage('');
     setErrorMessage('');
 
+    const payload = {
+      name: formData.full_name.trim(),
+      email: formData.email.trim(),
+      subject: formData.subject.trim() || formData.inquiry_type || 'General Inquiry',
+      message: formData.message.trim()
+    };
+
     try {
-      await contactService.sendMessage(formData);
+      await contactService.sendMessage(payload);
       setSuccessMessage('Thank you! Your message has been sent successfully. We will get back to you soon.');
       setFormData({
         full_name: '',
         email: '',
-        phone: '',
         inquiry_type: '',
         subject: '',
         message: ''
       });
     } catch (error) {
-      setErrorMessage('Failed to send your message. Please try again later.');
       console.error('Error sending message:', error);
+      const responseError = error.response?.data?.error || error.message;
+      setErrorMessage(responseError || 'Failed to send your message. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -128,11 +140,11 @@ function Contact() {
 
           <div className="social-icons">
             {[
-              { key: 'facebook_url', icon: FaFacebookF, label: 'Facebook' },
-              { key: 'twitter_url', icon: FaTwitter, label: 'Twitter' },
-              { key: 'instagram_url', icon: FaInstagram, label: 'Instagram' },
-              { key: 'linkedin_url', icon: FaLinkedinIn, label: 'LinkedIn' },
-              { key: 'youtube_url', icon: FaYoutube, label: 'YouTube' },
+              { key: 'facebook_url', icon: FaFacebookF, label: 'Facebook', class: 'facebook' },
+              { key: 'twitter_url', icon: FaTwitter, label: 'Twitter', class: 'twitter' },
+              { key: 'instagram_url', icon: FaInstagram, label: 'Instagram', class: 'instagram' },
+              { key: 'linkedin_url', icon: FaLinkedinIn, label: 'LinkedIn', class: 'linkedin' },
+              { key: 'youtube_url', icon: FaYoutube, label: 'YouTube', class: 'youtube' },
             ].map((social) => {
               const IconComponent = social.icon;
               const url = socialMedia[social.key];
@@ -145,7 +157,7 @@ function Contact() {
                   target={isActive ? '_blank' : undefined}
                   rel={isActive ? 'noopener noreferrer' : undefined}
                   aria-label={social.label}
-                  className={`social-link ${isActive ? 'active' : 'inactive'}`}
+                  className={`social-link ${social.class} ${isActive ? 'active' : 'inactive'}`}
                   onClick={(e) => !isActive && e.preventDefault()}
                   title={isActive ? `Visit our ${social.label}` : `${social.label} link coming soon`}
                 >
@@ -202,14 +214,6 @@ function Contact() {
               value={formData.email}
               onChange={handleInputChange}
               required
-            />
-
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number (Optional)"
-              value={formData.phone}
-              onChange={handleInputChange}
             />
 
             <select
