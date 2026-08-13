@@ -6,6 +6,7 @@ import Home from "./pages/Home/Home";
 import About from "./pages/About/About";
 import VisionMission from "./pages/VisionMission/VisionMission";
 import Executive from "./pages/Executive/Executive";
+import Gallery from "./pages/Gallery/Gallery";
 import Contact from "./pages/Contact/Contact";
 import Login from "./pages/Login/Login";
 import Admin from "./pages/Admin/Admin";
@@ -57,6 +58,15 @@ function App() {
           element={
             <PublicLayout>
               <Executive />
+            </PublicLayout>
+          }
+        />
+
+        <Route
+          path="/gallery"
+          element={
+            <PublicLayout>
+              <Gallery />
             </PublicLayout>
           }
         />

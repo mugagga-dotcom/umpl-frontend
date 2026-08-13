@@ -80,6 +80,9 @@ function Admin() {
     image_url: "",
   });
 
+  const [isEditingGallery, setIsEditingGallery] = useState(false);
+  const [editingGalleryId, setEditingGalleryId] = useState(null);
+
   const [replyFormData, setReplyFormData] = useState({
     subject: "",
     reply_content: "",
@@ -108,6 +111,11 @@ function Admin() {
     platform_icon: "",
     url: "",
     display_order: 0,
+  });
+
+  const [contentFormData, setContentFormData] = useState({
+    title: "",
+    content: "",
   });
 
   // =========================
@@ -206,33 +214,46 @@ function Admin() {
     e.preventDefault();
 
     try {
-      await galleryService.createGalleryItem({
-        title: galleryFormData.title,
-        description: galleryFormData.description,
-        image_url: galleryFormData.image_url,
-        is_active: true,
-      });
+      if (isEditingGallery && editingGalleryId) {
+        // Update existing
+        await galleryService.updateGalleryItem(editingGalleryId, {
+          title: galleryFormData.title,
+          description: galleryFormData.description,
+          image_url: galleryFormData.image_url,
+          is_active: true,
+        });
+        showNotification("success", "Gallery image updated successfully!");
+      } else {
+        // Create new
+        await galleryService.createGalleryItem({
+          title: galleryFormData.title,
+          description: galleryFormData.description,
+          image_url: galleryFormData.image_url,
+          is_active: true,
+        });
+        showNotification("success", "Image added to gallery successfully!");
+      }
 
-      setGalleryFormData({
-        title: "",
-        description: "",
-        image_url: "",
-      });
-
+      setGalleryFormData({ title: "", description: "", image_url: "" });
       setShowGalleryForm(false);
-
+      setIsEditingGallery(false);
+      setEditingGalleryId(null);
       await loadGalleryData();
-
-      showNotification(
-        "success",
-        "Image added to gallery successfully!"
-      );
     } catch (error) {
-      showNotification(
-        "error",
-        "Error adding image: " + error.message
-      );
+      showNotification("error", "Error saving image: " + error.message);
     }
+  };
+
+  const handleEditGalleryImage = (item) => {
+    setGalleryFormData({
+      title: item.title || "",
+      description: item.description || "",
+      image_url: item.image_url || "",
+    });
+    setIsEditingGallery(true);
+    setEditingGalleryId(item.id);
+    setShowGalleryForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDeleteGalleryImage = async (id) => {
@@ -367,18 +388,64 @@ function Admin() {
   const handleTeamSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Team form data:", teamFormData);
+    try {
+      const method = editingItem ? "PUT" : "POST";
+      const url = editingItem 
+        ? `${API_URL}/team/${editingItem.id}` 
+        : `${API_URL}/team`;
 
-    setShowTeamForm(false);
+      const response = await fetch(url, {
+        method: method,
+        headers: getHeaders(),
+        body: JSON.stringify(teamFormData),
+      });
 
-    showNotification(
-      "success",
-      editingItem
-        ? "Team member updated!"
-        : "Team member saved!"
-    );
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to save team member");
+      }
 
-    setEditingItem(null);
+      setShowTeamForm(false);
+      setEditingItem(null);
+      await loadTeamData();
+
+      showNotification(
+        "success",
+        editingItem ? "Team member updated!" : "Team member saved!"
+      );
+    } catch (error) {
+      showNotification("error", error.message);
+    }
+  };
+
+  const handleEditTeamMember = (member) => {
+    setTeamFormData({
+      full_name: member.full_name || "",
+      position: member.position || "",
+      bio: member.bio || "",
+      photo_url: member.photo_url || "",
+      email: member.email || "",
+      phone: member.phone || "",
+      order: member.order || 0,
+    });
+    setEditingItem(member);
+    setShowTeamForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDeleteTeamMember = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this team member?")) return;
+    try {
+      const response = await fetch(`${API_URL}/team/${id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to delete team member");
+      await loadTeamData();
+      showNotification("success", "Team member deleted!");
+    } catch (error) {
+      showNotification("error", error.message);
+    }
   };
 
   // =========================
@@ -415,15 +482,59 @@ function Admin() {
 
   const handleUserSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const method = editingItem ? "PUT" : "POST";
+      const url = editingItem 
+        ? `${API_URL}/users/${editingItem.id}` 
+        : `${API_URL}/users`;
 
-    console.log("User form data:", userFormData);
+      const response = await fetch(url, {
+        method: method,
+        headers: getHeaders(),
+        body: JSON.stringify(userFormData),
+      });
 
-    setShowUserForm(false);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to save user");
+      }
 
-    showNotification(
-      "success",
-      "User created successfully!"
-    );
+      setShowUserForm(false);
+      setEditingItem(null);
+      await loadUsersData();
+
+      showNotification("success", editingItem ? "User updated!" : "User created successfully!");
+    } catch (error) {
+      showNotification("error", error.message);
+    }
+  };
+
+  const handleEditUser = (user) => {
+    setUserFormData({
+      full_name: user.full_name || "",
+      email: user.email || "",
+      password: "", // leave blank on edit
+      role_id: user.role_id || "",
+      is_active: user.is_active,
+    });
+    setEditingItem(user);
+    setShowUserForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    try {
+      const response = await fetch(`${API_URL}/users/${id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to delete user");
+      await loadUsersData();
+      showNotification("success", "User deleted!");
+    } catch (error) {
+      showNotification("error", error.message);
+    }
   };
 
   // =========================
@@ -458,18 +569,57 @@ function Admin() {
 
   const handleSocialSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const method = editingItem ? "PUT" : "POST";
+      const url = editingItem 
+        ? `${API_URL}/settings/social-media/${editingItem.id}` 
+        : `${API_URL}/settings/social-media`;
 
-    console.log(
-      "Social form data:",
-      socialFormData
-    );
+      const response = await fetch(url, {
+        method: method,
+        headers: getHeaders(),
+        body: JSON.stringify(socialFormData),
+      });
 
-    setShowSocialForm(false);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to save social link");
+      }
 
-    showNotification(
-      "success",
-      "Social media platform added!"
-    );
+      setShowSocialForm(false);
+      setEditingItem(null);
+      await loadSocialLinks();
+      showNotification("success", editingItem ? "Social link updated!" : "Social media platform added!");
+    } catch (error) {
+      showNotification("error", error.message);
+    }
+  };
+
+  const handleEditSocialLink = (link) => {
+    setSocialFormData({
+      platform_name: link.platform_name || "",
+      platform_icon: link.platform_icon || "",
+      url: link.url || "",
+      display_order: link.display_order || 0,
+    });
+    setEditingItem(link);
+    setShowSocialForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDeleteSocialLink = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this social link?")) return;
+    try {
+      const response = await fetch(`${API_URL}/settings/social-media/${id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      });
+      if (!response.ok) throw new Error("Failed to delete social link");
+      await loadSocialLinks();
+      showNotification("success", "Social link deleted!");
+    } catch (error) {
+      showNotification("error", error.message);
+    }
   };
 
   // =========================
@@ -499,6 +649,38 @@ function Admin() {
         "Error loading content sections:",
         error
       );
+    }
+  };
+
+  const handleEditContent = (section) => {
+    setContentFormData({
+      title: section.title || "",
+      content: section.content || "",
+    });
+    setShowContentForm(section.section_key);
+  };
+
+  const handleContentSubmit = async (e) => {
+    e.preventDefault();
+    if (!showContentForm) return;
+
+    try {
+      const response = await fetch(`${API_URL}/settings/content/${showContentForm}`, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify(contentFormData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update content");
+      }
+
+      setShowContentForm(null);
+      await loadContentSections();
+      showNotification("success", "Content updated successfully!");
+    } catch (error) {
+      showNotification("error", error.message);
     }
   };
 
@@ -634,6 +816,14 @@ function Admin() {
     const { name, value } = e.target;
 
     setContactFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleContentFormChange = (e) => {
+    const { name, value } = e.target;
+    setContentFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -1123,105 +1313,89 @@ function Admin() {
         {activeTab === "gallery" && (
           <div className="content-section">
 
-            <div className="section-header">
-              <h2>
-                Gallery Management
-              </h2>
+            <div className="admin-panel-header">
+              <h2>Gallery Management</h2>
 
               <button
                 className="primary-btn"
-                onClick={() =>
-                  setShowGalleryForm(
-                    !showGalleryForm
-                  )
-                }
+                onClick={() => {
+                  if (showGalleryForm) {
+                    setShowGalleryForm(false);
+                    setIsEditingGallery(false);
+                    setEditingGalleryId(null);
+                    setGalleryFormData({ title: "", description: "", image_url: "" });
+                  } else {
+                    setShowGalleryForm(true);
+                  }
+                }}
               >
-                {showGalleryForm ? (
-                  "Cancel"
-                ) : (
-                  <>
-                    <FaPlus />
-                    Add Image
-                  </>
-                )}
+                {showGalleryForm ? "Cancel" : (<><FaPlus /> Add Image</>)}
               </button>
             </div>
 
             {showGalleryForm && (
               <div className="form-container">
-
                 <h3>
-                  Add New Gallery Image
+                  {isEditingGallery ? "Edit Gallery Image" : "Add New Gallery Image"}
                 </h3>
 
-                <form
-                  onSubmit={
-                    handleAddGalleryImage
-                  }
-                >
+                <form onSubmit={handleAddGalleryImage}>
 
                   <div className="form-group">
-                    <label>
-                      Image Title
-                    </label>
-
+                    <label>Image Title</label>
                     <input
                       type="text"
                       name="title"
-                      value={
-                        galleryFormData.title
-                      }
-                      onChange={
-                        handleGalleryFormChange
-                      }
+                      value={galleryFormData.title}
+                      onChange={handleGalleryFormChange}
                       placeholder="Enter image title"
                       required
                     />
                   </div>
 
                   <div className="form-group">
-                    <label>
-                      Description
-                    </label>
-
+                    <label>Description</label>
                     <textarea
                       name="description"
-                      value={
-                        galleryFormData.description
-                      }
-                      onChange={
-                        handleGalleryFormChange
-                      }
+                      value={galleryFormData.description}
+                      onChange={handleGalleryFormChange}
                       placeholder="Enter image description"
                       rows="3"
                     />
                   </div>
 
                   <div className="form-group">
-                    <label>
-                      Image URL
-                    </label>
-
+                    <label>Image URL</label>
                     <input
-                      type="url"
+                      type="text"
                       name="image_url"
-                      value={
-                        galleryFormData.image_url
-                      }
-                      onChange={
-                        handleGalleryFormChange
-                      }
-                      placeholder="https://example.com/image.jpg"
+                      value={galleryFormData.image_url}
+                      onChange={handleGalleryFormChange}
+                      placeholder="/photo.jpeg or https://example.com/image.jpg"
                       required
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    className="primary-btn"
-                  >
+                  {/* Live image preview */}
+                  {galleryFormData.image_url && (
+                    <div className="gallery-preview">
+                      <p className="preview-label">Preview:</p>
+                      <img
+                        src={galleryFormData.image_url}
+                        alt="Preview"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                        onLoad={(e) => {
+                          e.target.style.display = "block";
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  <button type="submit" className="primary-btn">
                     <FaCheck />
-                    Add Image
+                    {isEditingGallery ? "Update Image" : "Add Image"}
                   </button>
 
                 </form>
@@ -1229,50 +1403,37 @@ function Admin() {
             )}
 
             <div className="gallery-list">
-
-              <h3>
-                Current Gallery (
-                {stats.galleryCount} images)
-              </h3>
+              <h3>Current Gallery ({stats.galleryCount} images)</h3>
 
               {galleryItems.length === 0 ? (
                 <p className="empty-state">
-                  No gallery items yet.
-                  Add your first image!
+                  No gallery items yet. Add your first image!
                 </p>
               ) : (
                 <div className="gallery-grid">
-
                   {galleryItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="gallery-item"
-                    >
+                    <div key={item.id} className="gallery-item">
                       <img
                         src={item.image_url}
-                        alt={
-                          item.title ||
-                          "Gallery image"
-                        }
+                        alt={item.title || "Gallery image"}
                       />
 
                       <div className="item-info">
-                        <h4>
-                          {item.title}
-                        </h4>
-
-                        <p>
-                          {item.description}
-                        </p>
+                        <h4>{item.title}</h4>
+                        <p>{item.description}</p>
 
                         <div className="item-actions">
                           <button
+                            className="btn-edit"
+                            onClick={() => handleEditGalleryImage(item)}
+                          >
+                            <FaEdit />
+                            Edit
+                          </button>
+
+                          <button
                             className="delete-btn"
-                            onClick={() =>
-                              handleDeleteGalleryImage(
-                                item.id
-                              )
-                            }
+                            onClick={() => handleDeleteGalleryImage(item.id)}
                           >
                             <FaTrash />
                             Delete
@@ -1281,10 +1442,8 @@ function Admin() {
                       </div>
                     </div>
                   ))}
-
                 </div>
               )}
-
             </div>
           </div>
         )}
@@ -1296,7 +1455,7 @@ function Admin() {
         {activeTab === "messages" && (
           <div className="content-section">
 
-            <div className="section-header">
+            <div className="admin-panel-header">
               <h2>
                 Contact Messages (
                 {stats.messageCount})
@@ -1510,18 +1669,20 @@ function Admin() {
         {activeTab === "team" && (
           <div className="content-section">
 
-            <div className="section-header">
+            <div className="admin-panel-header">
               <h2>
                 Team Management
               </h2>
 
               <button
                 className="primary-btn"
-                onClick={() =>
-                  setShowTeamForm(
-                    !showTeamForm
-                  )
-                }
+                onClick={() => {
+                  setShowTeamForm(!showTeamForm);
+                  if (showTeamForm) {
+                    setEditingItem(null);
+                    setTeamFormData({ full_name: "", position: "", bio: "", photo_url: "", email: "", phone: "", order: 0 });
+                  }
+                }}
               >
                 {showTeamForm ? (
                   "Cancel"
@@ -1742,12 +1903,18 @@ function Admin() {
 
                           <div className="member-actions">
 
-                            <button className="btn-edit">
+                            <button 
+                              className="btn-edit"
+                              onClick={() => handleEditTeamMember(member)}
+                            >
                               <FaEdit />
                               Edit
                             </button>
 
-                            <button className="delete-btn">
+                            <button 
+                              className="delete-btn"
+                              onClick={() => handleDeleteTeamMember(member.id)}
+                            >
                               <FaTrash />
                               Delete
                             </button>
@@ -1773,7 +1940,7 @@ function Admin() {
         {activeTab === "users" && (
           <div className="content-section">
 
-            <div className="section-header">
+            <div className="admin-panel-header">
 
               <h2>
                 User Management
@@ -1781,11 +1948,13 @@ function Admin() {
 
               <button
                 className="primary-btn"
-                onClick={() =>
-                  setShowUserForm(
-                    !showUserForm
-                  )
-                }
+                onClick={() => {
+                  setShowUserForm(!showUserForm);
+                  if (showUserForm) {
+                    setEditingItem(null);
+                    setUserFormData({ full_name: "", email: "", password: "", role_id: "", is_active: true });
+                  }
+                }}
               >
                 {showUserForm ? (
                   "Cancel"
@@ -2002,13 +2171,19 @@ function Admin() {
 
                             <td>
 
-                              <button className="btn-edit">
+                              <button 
+                                className="btn-edit"
+                                onClick={() => handleEditUser(item)}
+                              >
                                 <FaEdit />
                               </button>
 
                               {item.id !==
                                 1 && (
-                                <button className="delete-btn">
+                                <button 
+                                  className="delete-btn"
+                                  onClick={() => handleDeleteUser(item.id)}
+                                >
                                   <FaTrash />
                                 </button>
                               )}
@@ -2036,7 +2211,7 @@ function Admin() {
         {activeTab === "content" && (
           <div className="content-section">
 
-            <div className="section-header">
+            <div className="admin-panel-header">
 
               <h2>
                 Content Management
@@ -2077,11 +2252,7 @@ function Admin() {
 
                         <button
                           className="btn-edit"
-                          onClick={() =>
-                            setShowContentForm(
-                              section.section_key
-                            )
-                          }
+                          onClick={() => handleEditContent(section)}
                         >
                           <FaEdit />
                           Edit
@@ -2158,28 +2329,33 @@ function Admin() {
                   </div>
 
                   <div className="modal-body">
-
-                    <p>
-                      Content editing
-                      interface for:{" "}
-                      {showContentForm}
-                    </p>
-
-                    <button
-                      className="primary-btn"
-                      onClick={() => {
-                        setShowContentForm(
-                          null
-                        );
-                        showNotification(
-                          "success",
-                          "Content saved!"
-                        );
-                      }}
-                    >
-                      Save Changes
-                    </button>
-
+                    <form onSubmit={handleContentSubmit}>
+                      <div className="form-group">
+                        <label>Title</label>
+                        <input
+                          type="text"
+                          name="title"
+                          value={contentFormData.title}
+                          onChange={handleContentFormChange}
+                          placeholder="Section Title"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Content</label>
+                        <textarea
+                          name="content"
+                          value={contentFormData.content}
+                          onChange={handleContentFormChange}
+                          placeholder="Section Content"
+                          rows="10"
+                        />
+                      </div>
+                      <div className="form-actions">
+                        <button type="submit" className="primary-btn">
+                          <FaCheck /> Save Changes
+                        </button>
+                      </div>
+                    </form>
                   </div>
 
                 </div>
@@ -2196,7 +2372,7 @@ function Admin() {
         {activeTab === "social" && (
           <div className="content-section">
 
-            <div className="section-header">
+            <div className="admin-panel-header">
 
               <h2>
                 Social Media Management
@@ -2204,11 +2380,13 @@ function Admin() {
 
               <button
                 className="primary-btn"
-                onClick={() =>
-                  setShowSocialForm(
-                    !showSocialForm
-                  )
-                }
+                onClick={() => {
+                  setShowSocialForm(!showSocialForm);
+                  if (showSocialForm) {
+                    setEditingItem(null);
+                    setSocialFormData({ platform_name: "", platform_icon: "", url: "", display_order: 0 });
+                  }
+                }}
               >
                 {showSocialForm ? (
                   "Cancel"
@@ -2226,7 +2404,7 @@ function Admin() {
               <div className="form-container">
 
                 <h3>
-                  Add Social Media Platform
+                  {editingItem ? "Edit Social Media Platform" : "Add Social Media Platform"}
                 </h3>
 
                 <form
@@ -2344,7 +2522,7 @@ function Admin() {
                     className="primary-btn"
                   >
                     <FaCheck />
-                    Add Platform
+                    {editingItem ? "Update Platform" : "Add Platform"}
                   </button>
 
                 </form>
@@ -2426,12 +2604,18 @@ function Admin() {
 
                           <div className="social-actions">
 
-                            <button className="btn-edit">
+                            <button 
+                              className="btn-edit"
+                              onClick={() => handleEditSocialLink(link)}
+                            >
                               <FaEdit />
                               Edit
                             </button>
 
-                            <button className="delete-btn">
+                            <button 
+                              className="delete-btn"
+                              onClick={() => handleDeleteSocialLink(link.id)}
+                            >
                               <FaTrash />
                               Delete
                             </button>
@@ -2458,7 +2642,7 @@ function Admin() {
         {activeTab === "settings" && (
           <div className="content-section">
 
-            <div className="section-header">
+            <div className="admin-panel-header">
               <h2>
                 Site Settings
               </h2>

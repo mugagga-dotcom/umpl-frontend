@@ -74,6 +74,7 @@
     letter-spacing: 1.8px;
     margin-bottom: 16px;
     text-transform: uppercase;
+    text-align: center;
 }
 
 .section-header h2 {
@@ -81,14 +82,16 @@
     margin-bottom: 20px;
     color: #111827;
     line-height: 1.05;
+    text-align: center;
 }
 
 .section-header p {
     margin: 0 auto;
-    max-width: 700px;
-    color: #4f5665;
-    font-size: 1rem;
-    line-height: 1.8;
+    max-width: 600px;
+    color: #666;
+    font-size: 17px;
+    line-height: 1.6;
+    text-align: center;
 }
 
 .executive-grid {
@@ -101,55 +104,63 @@
 
 .member-card {
     background: #ffffff;
-    border-radius: 28px;
+    border-radius: 40px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(229, 234, 242, 0.95);
+    transition: transform 0.3s ease;
 }
 
 .member-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 26px 68px rgba(15, 23, 42, 0.14);
+    transform: translateY(-8px);
 }
 
 .member-card img {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    height: 250px;
     object-fit: cover;
+    border-radius: 40px 40px 0 0;
 }
 
 .member-info {
-    padding: 24px;
+    padding: 24px 15px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    min-height: 220px;
+    min-height: 100px;
+    text-align: center;
+    align-items: center;
 }
 
 .member-info h3 {
-    font-size: 1rem;
+    font-size: 17px;
     font-weight: 800;
-    color: #111827;
+    color: #111;
     margin: 0;
+    text-align: center;
+    width: 100%;
+    line-height: 1.4;
 }
 
 .member-info h4 {
-    color: #e30613;
-    font-size: 0.95rem;
+    color: #E30613;
+    font-size: 13px;
     font-weight: 700;
     margin: 0;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 1px;
+    text-align: center;
+    width: 100%;
 }
 
 .member-info p {
     margin: 0;
-    color: #525f7f;
-    line-height: 1.9;
-    font-size: 0.96rem;
+    color: #777;
+    line-height: 1.8;
+    font-size: 0.85rem;
+    text-align: center;
+    width: 100%;
 }
 
 @media (max-width: 1120px) {
@@ -276,12 +287,32 @@
 }
 
 .sacco-icon {
-    font-size: 3.5rem;
-    height: 70px;
+    height: 76px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 8px;
+}
+
+.sacco-icon i {
+    font-size: 3rem;
+    color: #E30613;
+    line-height: 1;
+}
+
+/* Flaticon check icon in SACCO benefit list */
+.sacco-check {
+    font-size: 1.1rem;
+    color: #FFD100;
+    flex-shrink: 0;
+}
+
+/* Gem icon inside the placeholder card */
+.sacco-gem-icon {
+    font-size: 4.5rem;
+    color: rgba(255,255,255,0.85);
+    display: block;
+    margin-bottom: 16px;
 }
 
 .sacco-card h3 {
@@ -360,12 +391,9 @@
 .placeholder-text {
     text-align: center;
     color: white;
-}
-
-.placeholder-text span {
-    font-size: 5rem;
-    display: block;
-    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .placeholder-text p {

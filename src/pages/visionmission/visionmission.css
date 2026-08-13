@@ -87,6 +87,7 @@
     font-size:28px !important;
     font-weight:700 !important;
     color:#E30613 !important;
-    font-style:italic;
+    font-style:normal;
     text-align:center;
+    letter-spacing: 1px;
 }

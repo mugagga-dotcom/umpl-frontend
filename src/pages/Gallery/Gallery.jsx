@@ -2,9 +2,62 @@ import { useState, useEffect } from "react";
 import "./Gallery.css";
 import galleryService from "../../Services/galleryService";
 
+// Default executive photos shown when API has no items
+const defaultGalleryItems = [
+  {
+    id: 1,
+    title: "Mbabaali Maliseeri",
+    subtitle: "Chairperson",
+    image_url: "/chairman.jpeg",
+    description:
+      "Committed to fostering a culture of professionalism, unity, and excellence among media presenters in Uganda.",
+  },
+  {
+    id: 2,
+    title: "Ndawula Peter Simon",
+    subtitle: "Vice Chairman",
+    image_url: "/vice chairman.jpeg",
+    description:
+      "Supporting the Chairperson in promoting professionalism and ethical conduct, creating opportunities for capacity building.",
+  },
+  {
+    id: 3,
+    title: "Nabukenya Lilian",
+    subtitle: "Secretary",
+    image_url: "/Secretary.jpeg",
+    description:
+      "Maintaining effective communication and organization within the association to keep members informed and engaged.",
+  },
+  {
+    id: 4,
+    title: "Nalugwa Connie",
+    subtitle: "Treasurer",
+    image_url: "/treasurer.jpeg",
+    description:
+      "Managing the association's financial resources with transparency and accountability.",
+  },
+  {
+    id: 5,
+    title: "Ssegawa Ismael Sureman",
+    subtitle: "Publicity Officer",
+    image_url: "/publicity.jpeg",
+    description:
+      "Promoting the association and its activities to the public and media community.",
+  },
+  {
+    id: 6,
+    title: "UMPL",
+    subtitle: "Uganda Media Presenters League",
+    image_url: "/logo.jpeg",
+    description:
+      "Official logo of the Uganda Media Presenters League — representing unity, professionalism and excellence.",
+  },
+];
+
 const Gallery = () => {
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -13,56 +66,19 @@ const Gallery = () => {
       try {
         setLoading(true);
         const galleryItems = await galleryService.getGalleryItems();
-        
-        // If no items from API, use default executive photos
+
         if (!galleryItems || galleryItems.length === 0) {
-          const defaultData = [
-            { 
-              id: 1, 
-              title: "Chairman - Mbabaali Maliseeri", 
-              image_url: "/chairman.jpeg", 
-              description: "Chairperson of Uganda Media Presenters League, committed to fostering professionalism and unity." 
-            },
-            { 
-              id: 2, 
-              title: "Vice Chairman - Ndawula Peter Simon", 
-              image_url: "/vice chairman.jpeg", 
-              description: "Vice Chairman promoting professionalism and capacity building in media industry." 
-            },
-            { 
-              id: 3, 
-              title: "Secretary - Nabukenya Lilian", 
-              image_url: "/Secretary.jpeg", 
-              description: "Secretary maintaining effective communication and organizational efficiency." 
-            },
-            { 
-              id: 4, 
-              title: "Treasurer - Nalugwa Connie", 
-              image_url: "/treasurer.jpeg", 
-              description: "Treasurer managing financial resources with transparency and accountability." 
-            },
-            { 
-              id: 5, 
-              title: "Publicity - Ssegawa Ismael Sureman", 
-              image_url: "/publicity.jpeg", 
-              description: "Publicity officer promoting UMPL activities and ensuring clear communication." 
-            },
-            { 
-              id: 6, 
-              title: "UMPL Logo", 
-              image_url: "/logo.jpeg", 
-              description: "Official logo of Uganda Media Presenters League representing unity and professionalism." 
-            }
-          ];
-          setImages(defaultData);
+          setImages(defaultGalleryItems);
         } else {
           setImages(galleryItems);
         }
         setError(null);
-        setLoading(false);
       } catch (err) {
         console.error("Failed to fetch gallery:", err);
-        setError("Failed to load gallery images");
+        // On error still show default photos
+        setImages(defaultGalleryItems);
+        setError(null);
+      } finally {
         setLoading(false);
       }
     };
@@ -70,51 +86,118 @@ const Gallery = () => {
     fetchGallery();
   }, []);
 
-  const openModal = (image) => {
+  const openModal = (image, index) => {
     setSelectedImage(image);
+    setSelectedIndex(index);
   };
 
   const closeModal = () => {
     setSelectedImage(null);
+    setSelectedIndex(null);
   };
+
+  const goNext = (e) => {
+    e.stopPropagation();
+    const next = (selectedIndex + 1) % images.length;
+    setSelectedImage(images[next]);
+    setSelectedIndex(next);
+  };
+
+  const goPrev = (e) => {
+    e.stopPropagation();
+    const prev = (selectedIndex - 1 + images.length) % images.length;
+    setSelectedImage(images[prev]);
+    setSelectedIndex(prev);
+  };
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "Escape") closeModal();
+      if (e.key === "ArrowRight" && selectedImage) goNext(e);
+      if (e.key === "ArrowLeft" && selectedImage) goPrev(e);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [selectedImage, selectedIndex, images]);
 
   return (
     <div className="gallery-page">
+      {/* Header */}
       <div className="gallery-header">
         <h1>Our Gallery</h1>
-        <p>Meet our leadership and discover the faces behind UMPL's vision.</p>
+        <p>
+          Meet our leadership and discover the faces behind UMPL's vision.
+        </p>
       </div>
 
+      {/* Grid */}
       {loading ? (
-        <div className="gallery-loading">Loading gallery...</div>
+        <div className="gallery-loading">
+          <div className="spinner"></div>
+          <p>Loading gallery…</p>
+        </div>
       ) : error ? (
-        <div className="gallery-error">{error}</div>
+        <div className="gallery-error">
+          <i className="fi fi-rr-exclamation"></i>
+          <p>{error}</p>
+        </div>
       ) : (
         <div className="gallery-grid">
-          {images.map((item) => (
-            <div 
-              key={item.id} 
+          {images.map((item, index) => (
+            <div
+              key={item.id}
               className="gallery-item"
-              onClick={() => openModal(item)}
+              onClick={() => openModal(item, index)}
             >
-              <img src={item.image_url} alt={item.title} />
-              <div className="gallery-overlay">
-                <h3>{item.title}</h3>
-              </div>
+              <img src={item.image_url} alt={item.title} loading="lazy" />
             </div>
           ))}
         </div>
       )}
 
+      {/* Lightbox Modal */}
       {selectedImage && (
         <div className="gallery-modal" onClick={closeModal}>
-          <div className="gallery-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="gallery-modal-close" onClick={closeModal}>&times;</button>
+          <button className="gallery-modal-close" onClick={closeModal}>
+            <i className="fi fi-rr-cross"></i>
+          </button>
+
+          {/* Prev button */}
+          <button
+            className="gallery-nav gallery-nav-prev"
+            onClick={goPrev}
+          >
+            <i className="fi fi-rr-angle-left"></i>
+          </button>
+
+          <div
+            className="gallery-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
             <img src={selectedImage.image_url} alt={selectedImage.title} />
             <div className="gallery-modal-info">
               <h2>{selectedImage.title}</h2>
-              {selectedImage.description && <p>{selectedImage.description}</p>}
+              {selectedImage.subtitle && (
+                <span className="modal-subtitle">{selectedImage.subtitle}</span>
+              )}
+              {selectedImage.description && (
+                <p>{selectedImage.description}</p>
+              )}
             </div>
+          </div>
+
+          {/* Next button */}
+          <button
+            className="gallery-nav gallery-nav-next"
+            onClick={goNext}
+          >
+            <i className="fi fi-rr-angle-right"></i>
+          </button>
+
+          {/* Counter */}
+          <div className="gallery-counter">
+            {selectedIndex + 1} / {images.length}
           </div>
         </div>
       )}

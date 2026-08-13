@@ -1,5 +1,4 @@
 import "./visionsection.css";
-import { FaEye, FaBullseye, FaCheckCircle, FaStar, FaFlag } from "react-icons/fa";
 
 function VisionSection() {
   return (
@@ -17,7 +16,7 @@ function VisionSection() {
       <div className="vision-cards">
 
         <div className="vision-card">
-          <FaStar className="icon" />
+          <i className="fi fi-rr-star icon"></i>
 
           <div>
             <h3>Our Motto</h3>
@@ -29,7 +28,7 @@ function VisionSection() {
         </div>
 
         <div className="vision-card">
-          <FaFlag className="icon" />
+          <i className="fi fi-rr-flag icon"></i>
 
           <div>
             <h3>Our Goal</h3>
@@ -41,7 +40,7 @@ function VisionSection() {
         </div>
 
         <div className="vision-card">
-          <FaEye className="icon" />
+          <i className="fi fi-rr-eye icon"></i>
 
           <div>
             <h3>Vision</h3>
@@ -54,7 +53,7 @@ function VisionSection() {
         </div>
 
         <div className="vision-card">
-          <FaBullseye className="icon" />
+          <i className="fi fi-rr-bullseye icon"></i>
 
           <div>
             <h3>Mission</h3>
@@ -67,7 +66,7 @@ function VisionSection() {
         </div>
 
         <div className="vision-card">
-          <FaCheckCircle className="icon" />
+          <i className="fi fi-rr-check-circle icon"></i>
 
           <div>
             <h3>Objectives</h3>
