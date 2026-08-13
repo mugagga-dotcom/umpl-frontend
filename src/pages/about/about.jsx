@@ -31,7 +31,38 @@ const members = [
   },
 ];
 
-// Removed unused saccoIcons
+const saccoServices = [
+  {
+    iconClass: "fi fi-rr-piggy-bank",
+    title: "Savings & Loans",
+    description: "Affordable loans for members' personal and professional needs with competitive interest rates"
+  },
+  {
+    iconClass: "fi fi-rr-book-alt",
+    title: "Training & Development",
+    description: "Financial literacy programs and professional development courses for all members"
+  },
+  {
+    iconClass: "fi fi-rr-handshake",
+    title: "Group Welfare",
+    description: "Mutual aid support including health insurance, emergency assistance and social benefits"
+  },
+  {
+    iconClass: "fi fi-rr-briefcase",
+    title: "Business Opportunities",
+    description: "Joint ventures and business collaborations to create additional income streams"
+  },
+  {
+    iconClass: "fi fi-rr-chart-line-up",
+    title: "Wealth Management",
+    description: "Investment opportunities and financial advisory services to grow members' wealth"
+  },
+  {
+    iconClass: "fi fi-rr-shield-check",
+    title: "Member Protection",
+    description: "Security schemes and protection programs to safeguard members' interests"
+  },
+];
 
 function Welcome() {
   const [content, setContent] = useState(null);
@@ -82,11 +113,7 @@ function Sacco() {
   const contentLines = saccoData?.content
     ? saccoData.content.split("\n").filter(line => line.trim() !== '')
     : [
-        "A dedicated savings and credit cooperative society designed exclusively for UMPL members to provide financial security, investment opportunities, and mutual support within our media presenters community.",
-        "Our SACCO provides:",
-        "Savings and loan services tailored for media professionals",
-        "Financial literacy training and workshops",
-        "Investment opportunities for long-term financial security"
+        "A dedicated savings and credit cooperative society designed exclusively for UMPL members to provide financial security, investment opportunities, and mutual support within our media presenters community."
       ];
 
   return (
@@ -99,13 +126,45 @@ function Sacco() {
           </h2>
           
           <div className="sacco-dynamic-content" style={{ marginTop: '30px', textAlign: 'left', maxWidth: '800px', margin: '30px auto' }}>
-            {contentLines.map((line, idx) => (
-              <p key={idx} style={{ marginBottom: '15px', fontSize: '1.1rem', lineHeight: '1.6' }}>
-                {line.startsWith('-') || line.startsWith('•') || line.match(/^\d+\./) ? (
-                  <span style={{ marginLeft: '20px', display: 'block' }}>{line}</span>
-                ) : line}
+            {contentLines.length > 0 && (
+              <p style={{ marginBottom: '15px', fontSize: '1.1rem', lineHeight: '1.6' }}>
+                {contentLines[0]}
               </p>
-            ))}
+            )}
+          </div>
+        </div>
+
+        <div className="sacco-grid">
+          {saccoServices.map((service, index) => (
+            <div className="sacco-card" key={index}>
+              <div className="sacco-icon">
+                <i className={service.iconClass}></i>
+              </div>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="sacco-benefit">
+          <div className="sacco-benefit-content">
+            <h3>Why Join Our SACCO?</h3>
+            <ul>
+              <li><i className="fi fi-rr-check sacco-check"></i> Build personal wealth through disciplined savings</li>
+              <li><i className="fi fi-rr-check sacco-check"></i> Access emergency loans with flexible repayment terms</li>
+              <li><i className="fi fi-rr-check sacco-check"></i> Benefit from collective purchasing power and discounts</li>
+              <li><i className="fi fi-rr-check sacco-check"></i> Secure your family's future with group insurance schemes</li>
+              <li><i className="fi fi-rr-check sacco-check"></i> Network and collaborate with fellow media professionals</li>
+              <li><i className="fi fi-rr-check sacco-check"></i> Participate in dividends from SACCO profits</li>
+            </ul>
+          </div>
+          <div className="sacco-benefit-image">
+            <div className="sacco-image-placeholder">
+              <div className="placeholder-text">
+                <i className="fi fi-rr-diamond sacco-gem-icon"></i>
+                <p>Financial Empowerment for Media Presenters</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

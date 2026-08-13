@@ -144,15 +144,31 @@ const Gallery = () => {
         </div>
       ) : (
         <div className="gallery-grid">
-          {images.map((item, index) => (
-            <div
-              key={item.id}
-              className="gallery-item"
-              onClick={() => openModal(item, index)}
-            >
-              <img src={item.image_url} alt={item.title} loading="lazy" />
-            </div>
-          ))}
+          {images.map((item, index) => {
+            let displayTitle = item.title;
+            let displaySubtitle = item.subtitle;
+
+            // Handle API data where title contains "Position - Name"
+            if (item.title && item.title.includes(" - ")) {
+              const parts = item.title.split(" - ");
+              displaySubtitle = parts[0];
+              displayTitle = parts[1];
+            }
+
+            return (
+              <div
+                key={item.id}
+                className="gallery-item"
+                onClick={() => openModal(item, index)}
+              >
+                <img src={item.image_url} alt={displayTitle} loading="lazy" />
+                <div className="gallery-info">
+                  <h3 style={{ textTransform: 'uppercase' }}>{displayTitle}</h3>
+                  {displaySubtitle && <h4>{displaySubtitle}</h4>}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

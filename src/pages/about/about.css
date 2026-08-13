@@ -287,7 +287,7 @@
 }
 
 .sacco-icon {
-    height: 76px;
+    height: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -295,7 +295,7 @@
 }
 
 .sacco-icon i {
-    font-size: 3rem;
+    font-size: 3.6rem;
     color: #E30613;
     line-height: 1;
 }

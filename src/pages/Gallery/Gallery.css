@@ -48,40 +48,70 @@
    ============================= */
 
 .gallery-grid {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
+  grid-template-columns: repeat(5, minmax(160px, 1fr));
+  gap: 24px;
   padding: 20px;
 }
 
 .gallery-item {
-  position: relative;
-  overflow: hidden;
-  border-radius: 16px;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
   background: #ffffff;
+  border-radius: 40px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
+  transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
 .gallery-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
 }
 
 .gallery-item img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 250px;
   object-fit: cover;
-  object-position: center;
-  display: block;
+  border-radius: 40px 40px 0 0;
   transition: transform 0.3s ease;
 }
 
 .gallery-item:hover img {
   transform: scale(1.03);
+}
+
+.gallery-info {
+  padding: 24px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100px;
+  text-align: center;
+  align-items: center;
+}
+
+.gallery-info h3 {
+  font-size: 17px;
+  font-weight: 800;
+  color: #111;
+  margin: 0;
+  text-align: center;
+  width: 100%;
+  line-height: 1.4;
+}
+
+.gallery-info h4 {
+  color: #E30613;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  width: 100%;
 }
 
 /* =============================
@@ -272,14 +302,19 @@
    RESPONSIVE
    ============================= */
 
-@media (max-width: 1024px) {
+@media (max-width: 1120px) {
   .gallery-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 980px) {
+  .gallery-grid {
+    grid-template-columns: repeat(3, minmax(170px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
   .gallery-page {
     padding: 60px 4% 80px;
   }
@@ -304,7 +339,7 @@
   .gallery-nav-next { right: 12px; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .gallery-grid {
     grid-template-columns: 1fr;
     gap: 15px;
