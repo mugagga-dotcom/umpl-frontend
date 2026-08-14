@@ -7,7 +7,7 @@
 
 /* Header */
 .admin-header {
-  background: linear-gradient(135deg, #e30613 0%, #b30512 100%);
+  background: linear-gradient(135deg, #800000 0%, #600000 100%);
   color: white;
   padding: 24px 40px;
   box-shadow: 0 4px 12px rgba(227, 6, 19, 0.15);
@@ -124,13 +124,13 @@
 .dashboard-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: #e30613;
+  border-color: #800000;
 }
 
 .card-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #e30613, #b30512);
+  background: linear-gradient(135deg, #800000, #600000);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -158,7 +158,7 @@
   margin: 0;
   font-size: 2.2rem;
   font-weight: 800;
-  color: #e30613;
+  color: #800000;
 }
 
 .card-label {
@@ -168,14 +168,14 @@
 }
 
 .card-link {
-  color: #e30613;
+  color: #800000;
   text-decoration: none;
   font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .card-link:hover {
-  color: #b30512;
+  color: #600000;
   text-decoration: underline;
 }
 
@@ -209,7 +209,7 @@
 }
 
 .action-item:hover {
-  border-color: #e30613;
+  border-color: #800000;
   background: #fff9f8;
 }
 
@@ -226,7 +226,7 @@
 }
 
 .action-btn {
-  background: linear-gradient(135deg, #e30613, #b30512);
+  background: linear-gradient(135deg, #800000, #600000);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -315,7 +315,7 @@
 /* Navigation Tabs */
 .admin-nav {
   background: white;
-  border-bottom: 2px solid #e30613;
+  border-bottom: 2px solid #800000;
   padding: 0;
   display: flex;
   gap: 0;
@@ -338,12 +338,12 @@
 }
 
 .nav-tab:hover {
-  color: #e30613;
+  color: #800000;
 }
 
 .nav-tab.active {
-  color: #e30613;
-  border-bottom-color: #e30613;
+  color: #800000;
+  border-bottom-color: #800000;
 }
 
 /* Content Sections */
@@ -369,7 +369,7 @@
 
 /* Buttons */
 .primary-btn {
-  background: linear-gradient(135deg, #e30613, #b30512);
+  background: linear-gradient(135deg, #800000, #600000);
   color: white;
   border: none;
   padding: 12px 24px;
@@ -402,14 +402,14 @@
 }
 
 .btn-secondary:hover {
-  border-color: #e30613;
-  color: #e30613;
+  border-color: #800000;
+  color: #800000;
 }
 
 /* Form Styles */
 .form-container {
   background: #f9f9f9;
-  border: 2px solid #e30613;
+  border: 2px solid #800000;
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 32px;
@@ -417,7 +417,7 @@
 
 .form-container h3 {
   margin: 0 0 20px 0;
-  color: #e30613;
+  color: #800000;
   font-size: 1.3rem;
 }
 
@@ -447,7 +447,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #e30613;
+  border-color: #800000;
   box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
 }
 
@@ -486,7 +486,7 @@
 }
 
 .gallery-item:hover {
-  border-color: #e30613;
+  border-color: #800000;
   box-shadow: 0 4px 12px rgba(227, 6, 19, 0.2);
 }
 
@@ -573,7 +573,7 @@
 }
 
 .info-item .value {
-  color: #e30613;
+  color: #800000;
   font-weight: 500;
 }
 
@@ -691,7 +691,7 @@
 }
 
 .message-item:hover {
-  border-color: #e30613;
+  border-color: #800000;
   box-shadow: 0 4px 12px rgba(227, 6, 19, 0.1);
 }
 
@@ -718,7 +718,7 @@
 
 .message-email {
   margin: 0 0 8px 0;
-  color: #e30613;
+  color: #800000;
   font-size: 0.95rem;
 }
 
@@ -788,7 +788,7 @@
 
 /* Message Styles */
 .unread-badge {
-  background: #e30613;
+  background: #800000;
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -825,7 +825,7 @@
 
 .reply-form {
   background: #f9f9f9;
-  border: 2px solid #e30613;
+  border: 2px solid #800000;
   border-radius: 8px;
   padding: 16px;
   margin-top: 16px;
@@ -847,7 +847,7 @@
 }
 
 .team-item:hover {
-  border-color: #e30613;
+  border-color: #800000;
   box-shadow: 0 4px 12px rgba(227, 6, 19, 0.2);
 }
 
@@ -862,7 +862,7 @@
 }
 
 .member-position {
-  color: #e30613;
+  color: #800000;
   font-weight: 600;
   margin: 4px 0;
 }
@@ -944,7 +944,7 @@
 }
 
 .content-item:hover {
-  border-color: #e30613;
+  border-color: #800000;
 }
 
 .content-header {
@@ -988,12 +988,12 @@
 }
 
 .social-link-item:hover {
-  border-color: #e30613;
+  border-color: #800000;
 }
 
 .social-icon {
   font-size: 2rem;
-  color: #e30613;
+  color: #800000;
 }
 
 .social-info {
@@ -1085,9 +1085,9 @@
 }
 
 .btn-primary {
-  background: #e30613;
+  background: #800000;
   color: white;
-  border: 1px solid #e30613;
+  border: 1px solid #800000;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -1099,7 +1099,7 @@
 }
 
 .btn-primary:hover {
-  background: #b30512;
+  background: #600000;
   transform: translateY(-1px);
 }
 

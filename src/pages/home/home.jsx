@@ -1,8 +1,8 @@
 import Hero from "../../components/hero/hero";
 import Welcome from "../../components/welcome/welcome";
-import VisionSection from "../../components/visionsection/visionsection";
+// import VisionSection from "../../components/visionsection/visionsection";
 import CoreValues from "../../components/corevalues/corevalues";
-import Executive from "../../components/executive/executive";
+// import Executive from "../../components/executive/executive";
 import CTA from "../../components/cta/cta";
 import Footer from "../../components/footer/footer";
 
@@ -11,9 +11,9 @@ function Home() {
     <>
       <Hero />
       <Welcome />
-      <VisionSection />
+      {/* <VisionSection /> */}
       <CoreValues />
-      <Executive />
+      {/* <Executive /> */}
       <CTA />
       <Footer />
     </>

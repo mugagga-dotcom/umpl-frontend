@@ -4,10 +4,26 @@ import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
+const HERO_IMAGES = [
+  "/hero.jpeg",
+  "/HERO2.jpg",
+  "/HERO3.jpg",
+];
+
 function Hero() {
   const navigate = useNavigate();
   const [heroContent, setHeroContent] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Auto-advance every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Fetch hero text content from backend
   useEffect(() => {
     fetch(`${API_URL}/settings/content/homepage_hero`)
       .then((res) => res.json())
@@ -17,26 +33,22 @@ function Hero() {
       .catch(() => {});
   }, []);
 
-  // First line of content is the tagline, rest is the subtitle
   const lines = heroContent?.content
     ? heroContent.content.split("\n").filter((l) => l.trim().length > 0)
     : [];
-  const tagline = lines[0] || "Uniting Media Voices Across Uganda";
   const subtitle =
     lines.slice(1).join(" ") ||
     "Uniting media presenters across Uganda through professionalism, unity, integrity and excellence.";
 
   return (
-    <section className="hero">
-      <div className="overlay">
+    <section
+      className="hero"
+      style={{ backgroundImage: `url("${HERO_IMAGES[currentIndex]}")` }}
+    >
+      <div className="hero-inner">
         <img src="/logo.jpeg" alt="UMPL Logo" className="hero-logo" />
-
-        <h1>
-          {heroContent?.title || "Uganda Media Presenters League"}
-        </h1>
-
+        <h1>{heroContent?.title || ""}</h1>
         <p>{subtitle}</p>
-
         <div className="hero-buttons">
           <button
             className="btn-secondary"

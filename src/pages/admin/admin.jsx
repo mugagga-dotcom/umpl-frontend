@@ -1266,43 +1266,7 @@ function Admin() {
               </div>
             </section>
 
-            <section className="system-status">
-              <h2>System Status</h2>
 
-              <div className="status-items">
-
-                <div className="status-item">
-                  <span className="status-dot active"></span>
-                  <span>Backend API</span>
-
-                  <span className="status-text">
-                    <FaCheck />
-                    Connected
-                  </span>
-                </div>
-
-                <div className="status-item">
-                  <span className="status-dot active"></span>
-                  <span>Database</span>
-
-                  <span className="status-text">
-                    <FaCheck />
-                    Connected
-                  </span>
-                </div>
-
-                <div className="status-item">
-                  <span className="status-dot active"></span>
-                  <span>Authentication</span>
-
-                  <span className="status-text">
-                    <FaCheck />
-                    Verified
-                  </span>
-                </div>
-
-              </div>
-            </section>
           </>
         )}
 

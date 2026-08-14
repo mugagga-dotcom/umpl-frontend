@@ -79,12 +79,7 @@ function Welcome() {
   return (
     <section className="welcome">
       <div className="welcome-container">
-        <div className="welcome-image">
-          <img src="/logo.jpeg" alt="UMPL Logo" />
-        </div>
-
-        <div className="welcome-content">
-          <h5>WELCOME TO UMPL</h5>
+        <div className="welcome-content" style={{ gridColumn: '1 / -1', margin: '0 auto', maxWidth: '800px', textAlign: 'center' }}>
           <h2>
             {content?.title || "Uganda Media Presenters League"}
           </h2>

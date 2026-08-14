@@ -21,8 +21,6 @@ function Navbar() {
           </ul>
         </nav>
 
-        <Link to="/login" className="login-btn">Login</Link>
-
       </div>
     </header>
   );

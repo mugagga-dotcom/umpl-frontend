@@ -14,9 +14,7 @@ function Welcome() {
 
           <h5>WELCOME TO UMPL</h5>
 
-          <h2>
-            Uganda Media Presenters League
-          </h2>
+          <h2></h2>
 
           <p>
             The Uganda Media Presenters League (UMPL) is a professional

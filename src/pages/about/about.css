@@ -249,11 +249,11 @@
 }
 
 .sacco .section-header h5 {
-    color: #e30613;
+    color: #000;
 }
 
 .sacco .section-header h2 {
-    background: linear-gradient(135deg, #e30613 0%, #b30512 100%);
+    background: linear-gradient(135deg, #990000 0%, #660000 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -271,8 +271,8 @@
     background: #ffffff;
     border-radius: 24px;
     padding: 42px 32px;
-    box-shadow: 0 12px 40px rgba(227, 6, 19, 0.08);
-    border: 2px solid rgba(227, 6, 19, 0.1);
+    box-shadow: 0 12px 40px rgba(128, 0, 0, 0.08);
+    border: 2px solid rgba(128, 0, 0, 0.1);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -282,8 +282,8 @@
 
 .sacco-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 60px rgba(227, 6, 19, 0.15);
-    border-color: rgba(227, 6, 19, 0.3);
+    box-shadow: 0 20px 60px rgba(128, 0, 0, 0.15);
+    border-color: rgba(128, 0, 0, 0.3);
 }
 
 .sacco-icon {
@@ -296,7 +296,7 @@
 
 .sacco-icon i {
     font-size: 3.6rem;
-    color: #E30613;
+    color: #800000;
     line-height: 1;
 }
 
@@ -331,7 +331,7 @@
 }
 
 .sacco-benefit {
-    background: linear-gradient(135deg, #e30613 0%, #b30512 100%);
+    background: linear-gradient(135deg, #990000 0%, #660000 100%);
     border-radius: 28px;
     padding: 60px;
     display: grid;
