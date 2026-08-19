@@ -1,89 +1,444 @@
+/* =========================================
+   HERO SECTION
+========================================= */
+
 .hero {
     min-height: 90vh;
+
     background-size: cover;
-    background-position: center;
+
+    /*
+       Desktop:
+       Keep the original composition centered.
+    */
+    background-position: center center;
+
     background-repeat: no-repeat;
+
     position: relative;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     transition: background-image 1s ease-in-out;
+
+    overflow: hidden;
 }
 
 
+/* =========================================
+   HERO CONTENT
+========================================= */
 
 .hero-inner {
     position: relative;
+
     z-index: 1;
+
     max-width: 1080px;
+
     width: 100%;
+
     padding: 40px 24px;
+
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
+
     text-align: center;
+
     color: #ffffff;
+
+    box-sizing: border-box;
 }
+
+
+/* =========================================
+   HERO LOGO
+========================================= */
 
 .hero-logo {
     width: 140px;
+
+    height: auto;
+
+    object-fit: contain;
+
     margin-bottom: 24px;
 }
 
+
+/* =========================================
+   HERO TITLE
+========================================= */
+
 .hero h1 {
     font-size: clamp(2.8rem, 4vw, 4.8rem);
+
     margin-bottom: 20px;
+
     line-height: 1.05;
+
     letter-spacing: 0.03em;
 }
 
+
+/* =========================================
+   HERO DESCRIPTION
+========================================= */
+
 .hero p {
     width: min(85%, 720px);
+
     font-size: clamp(1.4rem, 2vw, 1.8rem);
+
     line-height: 1.8;
+
     margin: 0 auto;
+
     color: #ffffff;
+
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+
     font-weight: 500;
 }
 
+
+/* =========================================
+   HERO BUTTONS
+========================================= */
+
 .hero-buttons {
     margin-top: 36px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 15px;
 }
+
+
+/* =========================================
+   BUTTON
+========================================= */
 
 .btn-secondary {
     background: rgba(255, 255, 255, 0.1);
+
     color: #ffffff;
+
     border: 2px solid rgba(255, 255, 255, 0.85);
+
     padding: 14px 34px;
+
     cursor: pointer;
+
     border-radius: 999px;
+
     font-size: 1rem;
+
     font-weight: 700;
-    transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease;
 }
 
 .btn-secondary:hover {
     background: #E30613;
+
     color: #ffffff;
+
     border-color: #E30613;
+
     transform: translateY(-3px);
 }
 
-@media (max-width: 768px) {
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+
     .hero {
-        min-height: 80vh;
+        min-height: 85vh;
+
+        /*
+           Slightly favor the left side so
+           the microphone remains visible.
+        */
+        background-position: 35% center;
     }
 
     .hero-inner {
-        padding: 32px 18px;
+        max-width: 900px;
+
+        padding: 35px 22px;
     }
 
-    .hero h1 {
-        font-size: 2.8rem;
+    .hero-logo {
+        width: 130px;
     }
 
     .hero p {
-        font-size: 1.3rem;
+        width: min(90%, 700px);
+
+        font-size: 1.5rem;
+    }
+}
+
+
+/* =========================================
+   MOBILE PHONES
+========================================= */
+
+@media (max-width: 768px) {
+
+    .hero {
+
+        /*
+           IMPORTANT:
+           Your microphone is on the LEFT
+           side of the background image.
+
+           20% moves the background focus
+           toward the microphone.
+        */
+
+        min-height: 80vh;
+
+        background-size: cover;
+
+        background-position: 20% center;
+
+        align-items: center;
+    }
+
+
+    .hero-inner {
+
+        width: 92%;
+
+        padding: 35px 15px;
+
+        box-sizing: border-box;
+    }
+
+
+    /* Logo */
+
+    .hero-logo {
+
+        width: 130px;
+
+        max-width: 45vw;
+
+        height: auto;
+
+        margin-bottom: 22px;
+    }
+
+
+    /* Title */
+
+    .hero h1 {
+
+        font-size: 2.4rem;
+
+        line-height: 1.15;
+
+        margin-bottom: 15px;
+    }
+
+
+    /* Description */
+
+    .hero p {
+
+        width: 95%;
+
+        font-size: 1.2rem;
+
+        line-height: 1.55;
+
+        margin: 0 auto;
+    }
+
+
+    /* Buttons */
+
+    .hero-buttons {
+
+        margin-top: 28px;
+
+        display: flex;
+
+        flex-direction: row;
+
+        justify-content: center;
+
+        align-items: center;
+
+        gap: 10px;
+
+        width: 100%;
+    }
+
+
+    .btn-secondary {
+
+        padding: 13px 18px;
+
+        font-size: 0.95rem;
+
+        border-radius: 10px;
+    }
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 500px) {
+
+    .hero {
+
+        min-height: calc(100vh - 68px);
+
+        /*
+           Keep the LEFT side of the
+           background visible.
+        */
+        background-position: 12% center;
+    }
+
+
+    .hero-inner {
+
+        width: 94%;
+
+        padding: 30px 10px;
+    }
+
+
+    .hero-logo {
+
+        width: 125px;
+
+        max-width: 42vw;
+
+        margin-bottom: 20px;
+    }
+
+
+    .hero h1 {
+
+        font-size: 2rem;
+
+        line-height: 1.2;
+
+        margin-bottom: 12px;
+    }
+
+
+    .hero p {
+
+        width: 100%;
+
+        font-size: 1.05rem;
+
+        line-height: 1.5;
+    }
+
+
+    .hero-buttons {
+
+        margin-top: 24px;
+
+        gap: 10px;
+    }
+
+
+    .btn-secondary {
+
+        padding: 12px 15px;
+
+        font-size: 0.9rem;
+
+        border-radius: 9px;
+    }
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 380px) {
+
+    .hero {
+
+        min-height: calc(100vh - 65px);
+
+        background-position: 8% center;
+    }
+
+
+    .hero-inner {
+
+        width: 94%;
+
+        padding: 25px 8px;
+    }
+
+
+    .hero-logo {
+
+        width: 110px;
+    }
+
+
+    .hero h1 {
+
+        font-size: 1.75rem;
+    }
+
+
+    .hero p {
+
+        font-size: 1rem;
+
+        line-height: 1.45;
+    }
+
+
+    .hero-buttons {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+        width: 100%;
+    }
+
+
+    .btn-secondary {
+
+        width: 80%;
+
+        max-width: 260px;
+
+        padding: 12px 15px;
     }
 }

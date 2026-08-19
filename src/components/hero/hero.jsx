@@ -50,20 +50,20 @@ function Hero() {
         <h1>{heroContent?.title || ""}</h1>
         <p>{subtitle}</p>
         <div className="hero-buttons">
-          <button
-            className="btn-secondary"
-            style={{ marginRight: "15px" }}
-            onClick={() => navigate("/about")}
-          >
-            Learn More
-          </button>
-          <button
-            className="btn-secondary"
-            onClick={() => navigate("/contact")}
-          >
-            Contact Us
-          </button>
-        </div>
+    <button
+        className="btn-secondary"
+        onClick={() => navigate("/about")}
+    >
+        Learn More
+    </button>
+
+    <button
+        className="btn-secondary"
+        onClick={() => navigate("/contact")}
+    >
+        Contact Us
+    </button>
+     </div>
       </div>
     </section>
   );
