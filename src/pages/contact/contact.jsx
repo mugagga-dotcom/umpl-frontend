@@ -1,7 +1,7 @@
 import "./contact.css";
 import { useState, useEffect } from "react";
 import settingsService from "../../Services/settingsService";
-import contactService from "../../Services/contactService";
+import contactService from "../../Services/ContactService";
 import {
   FaPhoneAlt,
   FaEnvelope,
