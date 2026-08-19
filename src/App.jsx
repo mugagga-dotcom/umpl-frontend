@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/navbar/navbar";
 
-import Home from "./pages/Home/Home";
-import About from "./pages/About/About";
-import VisionMission from "./pages/VisionMission/VisionMission";
-import Executive from "./pages/Executive/Executive";
+import Home from "./pages/home/home";
+import About from "./pages/about/about";
+import VisionMission from "./pages/visionmission/visionmission";
+import Executive from "./pages/executive/executive";
 import Gallery from "./pages/Gallery/Gallery";
-import Contact from "./pages/Contact/Contact";
-import Login from "./pages/Login/Login";
-import Admin from "./pages/Admin/Admin";
+import Contact from "./pages/contact/contact";
+import Login from "./pages/login/login";
+import Admin from "./pages/admin/admin";
 
 function PublicLayout({ children }) {
   return (
