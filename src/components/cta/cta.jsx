@@ -1,4 +1,5 @@
 import "./cta.css";
+import { Link } from "react-router-dom";
 
 function CTA() {
   return (
@@ -15,13 +16,13 @@ function CTA() {
         </p>
 
         <div className="cta-buttons">
-          <a href="/contact" className="btn-primary">
+          <Link to="/contact" className="btn-primary">
             Join UMPL
-          </a>
+          </Link>
 
-          <a href="/contact" className="btn-secondary">
+          <Link to="/contact" className="btn-secondary">
             Contact Us
-          </a>
+          </Link>
         </div>
 
       </div>

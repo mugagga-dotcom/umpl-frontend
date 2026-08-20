@@ -67,3 +67,52 @@
     line-height:1.8;
     font-size: 16px;
 }
+
+/* =========================================================
+   RESPONSIVE DESIGN
+========================================================= */
+
+@media (max-width: 1024px) {
+    .core-values {
+        padding: 80px 5%;
+    }
+    .section-title h2 {
+        font-size: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .core-values {
+        padding: 60px 5%;
+    }
+    .section-title h2 {
+        font-size: 32px;
+    }
+    .section-title p {
+        font-size: 16px;
+    }
+    .value-card {
+        padding: 25px;
+    }
+    .value-icon {
+        font-size: 45px;
+    }
+    .value-card h3 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .core-values {
+        padding: 40px 5%;
+    }
+    .section-title h2 {
+        font-size: 28px;
+    }
+    .section-title p {
+        font-size: 15px;
+    }
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+}

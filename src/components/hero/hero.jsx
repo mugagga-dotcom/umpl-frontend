@@ -4,24 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
-const HERO_IMAGES = [
-  "/hero.jpeg",
-  "/HERO2.jpg",
-  "/HERO3.jpg",
-];
+const HERO_IMAGE = "/hero.jpeg";
 
 function Hero() {
   const navigate = useNavigate();
   const [heroContent, setHeroContent] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Auto-advance every 5 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
 
   // Fetch hero text content from backend
   useEffect(() => {
@@ -43,11 +30,9 @@ function Hero() {
   return (
     <section
       className="hero"
-      style={{ backgroundImage: `url("${HERO_IMAGES[currentIndex]}")` }}
+      style={{ backgroundImage: `url("${HERO_IMAGE}")` }}
     >
       <div className="hero-inner">
-        <img src="/logo.jpeg" alt="UMPL Logo" className="hero-logo" />
-        <h1>{heroContent?.title || ""}</h1>
         <p>{subtitle}</p>
         <div className="hero-buttons">
     <button
