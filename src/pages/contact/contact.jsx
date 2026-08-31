@@ -26,7 +26,6 @@ function Contact() {
     full_name: '',
     email: '',
     inquiry_type: '',
-    subject: '',
     message: ''
   });
 
@@ -72,7 +71,7 @@ function Contact() {
     const payload = {
       name: formData.full_name.trim(),
       email: formData.email.trim(),
-      subject: formData.subject.trim() || formData.inquiry_type || 'General Inquiry',
+      subject: formData.inquiry_type || 'General Inquiry',
       message: formData.message.trim()
     };
 
@@ -83,7 +82,6 @@ function Contact() {
         full_name: '',
         email: '',
         inquiry_type: '',
-        subject: '',
         message: ''
       });
     } catch (error) {
@@ -229,14 +227,6 @@ function Contact() {
               <option value="general">General Question</option>
             </select>
 
-            <input
-              type="text"
-              name="subject"
-              placeholder="Subject"
-              value={formData.subject}
-              onChange={handleInputChange}
-              required
-            />
 
             <textarea
               name="message"

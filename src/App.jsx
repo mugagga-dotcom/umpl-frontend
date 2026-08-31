@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/navbar/navbar";
+import Footer from "./components/footer/footer";
+import CTA from "./components/cta/cta";
 
 import Home from "./pages/home/home";
 import About from "./pages/about/about";
@@ -16,6 +18,8 @@ function PublicLayout({ children }) {
     <>
       <Navbar />
       {children}
+      <CTA />
+      <Footer />
     </>
   );
 }
