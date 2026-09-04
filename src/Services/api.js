@@ -40,4 +40,19 @@ api.interceptors.response.use(
   }
 );
 
+export const formatMediaUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  
+  // VITE_API_URL is typically http://127.0.0.1:5000/api
+  // We want to construct the base URL without /api
+  const baseUrl = API_URL.replace('/api', '');
+  
+  // Ensure the URL starts with a slash
+  const formattedPath = url.startsWith('/') ? url : `/${url}`;
+  return `${baseUrl}${formattedPath}`;
+};
+
 export default api;

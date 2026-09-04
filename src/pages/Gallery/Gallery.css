@@ -51,68 +51,69 @@
   max-width: 1240px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(5, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   padding: 20px;
 }
 
 .gallery-item {
   background: #ffffff;
-  border-radius: 40px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   transition: transform 0.3s ease;
   cursor: pointer;
+  border: 1px solid #e5e7eb;
 }
 
 .gallery-item:hover {
-  transform: translateY(-8px);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px rgba(0,0,0,0.1);
 }
 
 .gallery-item img {
   width: 100%;
-  height: 250px;
+  height: 200px;
   object-fit: cover;
-  border-radius: 40px 40px 0 0;
   transition: transform 0.3s ease;
 }
 
 .gallery-item:hover img {
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .gallery-info {
-  padding: 24px 15px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 100px;
-  text-align: center;
-  align-items: center;
+  gap: 8px;
+  flex: 1;
+  text-align: left;
+  align-items: flex-start;
 }
 
 .gallery-info h3 {
-  font-size: 17px;
-  font-weight: 800;
-  color: #111;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
   margin: 0;
-  text-align: center;
   width: 100%;
   line-height: 1.4;
+  text-transform: none !important;
 }
 
 .gallery-info h4 {
-  color: #E30613;
-  font-size: 13px;
-  font-weight: 700;
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 400;
   margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-align: center;
+  text-transform: none;
+  letter-spacing: normal;
   width: 100%;
 }
+
 
 /* =============================
    LOADING / ERROR

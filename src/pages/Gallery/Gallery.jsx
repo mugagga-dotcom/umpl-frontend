@@ -1,58 +1,9 @@
 import { useState, useEffect } from "react";
 import "./Gallery.css";
 import galleryService from "../../Services/galleryService";
+import { resolveMediaUrl } from "../../Services/uploadService";
 
-// Default executive photos shown when API has no items
-const defaultGalleryItems = [
-  {
-    id: 1,
-    title: "Mbabaali Maliseeri",
-    subtitle: "Chairperson",
-    image_url: "/chairman.jpeg",
-    description:
-      "Committed to fostering a culture of professionalism, unity, and excellence among media presenters in Uganda.",
-  },
-  {
-    id: 2,
-    title: "Ndawula Peter Simon",
-    subtitle: "Vice Chairman",
-    image_url: "/vice chairman.jpeg",
-    description:
-      "Supporting the Chairperson in promoting professionalism and ethical conduct, creating opportunities for capacity building.",
-  },
-  {
-    id: 3,
-    title: "Nabukenya Lilian",
-    subtitle: "Secretary",
-    image_url: "/Secretary.jpeg",
-    description:
-      "Maintaining effective communication and organization within the association to keep members informed and engaged.",
-  },
-  {
-    id: 4,
-    title: "Nalugwa Connie",
-    subtitle: "Treasurer",
-    image_url: "/treasurer.jpeg",
-    description:
-      "Managing the association's financial resources with transparency and accountability.",
-  },
-  {
-    id: 5,
-    title: "Ssegawa Ismael Sureman",
-    subtitle: "Publicity Officer",
-    image_url: "/publicity.jpeg",
-    description:
-      "Promoting the association and its activities to the public and media community.",
-  },
-  {
-    id: 6,
-    title: "UMPL",
-    subtitle: "Uganda Media Presenters League",
-    image_url: "/logo.jpeg",
-    description:
-      "Official logo of the Uganda Media Presenters League — representing unity, professionalism and excellence.",
-  },
-];
+
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
@@ -62,28 +13,65 @@ const Gallery = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchGallery = async () => {
+    const fetchAll = async () => {
       try {
         setLoading(true);
-        const galleryItems = await galleryService.getGalleryItems();
+        // Fetch gallery items
+        let finalItems = [];
+        try {
+          const gItems = await galleryService.getGalleryItems();
+          if (gItems && gItems.length > 0) {
+            finalItems = [...gItems];
+          }
+        } catch (e) {
+          console.error("Failed to fetch gallery:", e);
+        }
 
-        if (!galleryItems || galleryItems.length === 0) {
-          setImages(defaultGalleryItems);
+        // Fetch team members and merge them
+        try {
+          const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
+          const res = await fetch(`${API_URL}/team`);
+          if (res.ok) {
+            const data = await res.json();
+            const teamList = data.team_members || data;
+            if (teamList && teamList.length > 0) {
+              const teamAsGallery = teamList.map(member => ({
+                id: `team-${member.id}`,
+                title: member.full_name,
+                subtitle: member.position,
+                image_url: member.photo_url,
+                description: member.bio
+              }));
+              
+              // Filter out duplicates (if user added same person to both Team and Gallery)
+              const uniqueTeamMembers = teamAsGallery.filter(
+                teamMember => !finalItems.some(
+                  galleryItem => galleryItem.title && galleryItem.title.toLowerCase().trim() === teamMember.title.toLowerCase().trim()
+                )
+              );
+              
+              finalItems = [...finalItems, ...uniqueTeamMembers];
+            }
+          }
+        } catch (e) {
+          console.error("Failed to fetch team for gallery:", e);
+        }
+
+        if (finalItems.length === 0) {
+          setImages([]);
         } else {
-          setImages(galleryItems);
+          setImages(finalItems);
         }
         setError(null);
       } catch (err) {
-        console.error("Failed to fetch gallery:", err);
-        // On error still show default photos
-        setImages(defaultGalleryItems);
-        setError(null);
+        console.error("Failed to fetch data:", err);
+        setImages([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGallery();
+    fetchAll();
   }, []);
 
   const openModal = (image, index) => {
@@ -161,10 +149,11 @@ const Gallery = () => {
                 className="gallery-item"
                 onClick={() => openModal(item, index)}
               >
-                <img src={item.image_url} alt={displayTitle} loading="lazy" />
+                <img src={resolveMediaUrl(item.image_url)} alt={displayTitle} loading="lazy" />
                 <div className="gallery-info">
-                  <h3 style={{ textTransform: 'uppercase' }}>{displayTitle}</h3>
+                  <h3>{displayTitle}</h3>
                   {displaySubtitle && <h4>{displaySubtitle}</h4>}
+                  {item.description && <h4 style={{ color: '#4b5563', fontSize: '0.85rem' }}>{item.description}</h4>}
                 </div>
               </div>
             );
@@ -191,7 +180,7 @@ const Gallery = () => {
             className="gallery-modal-content"
             onClick={(e) => e.stopPropagation()}
           >
-            <img src={selectedImage.image_url} alt={selectedImage.title} />
+            <img src={resolveMediaUrl(selectedImage.image_url)} alt={selectedImage.title} />
             <div className="gallery-modal-info">
               <h2>{selectedImage.title}</h2>
               {selectedImage.subtitle && (

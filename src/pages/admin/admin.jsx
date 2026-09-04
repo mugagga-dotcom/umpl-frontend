@@ -1,8 +1,9 @@
 import "./admin.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import authService from "../../Services/authService";
 import galleryService from "../../Services/galleryService";
+import { uploadFile, resolveMediaUrl } from "../../Services/uploadService";
 
 import {
   FaSignOutAlt,
@@ -82,6 +83,24 @@ function Admin() {
 
   const [isEditingGallery, setIsEditingGallery] = useState(false);
   const [editingGalleryId, setEditingGalleryId] = useState(null);
+
+  // Upload state — gallery
+  const [galleryUploadMode, setGalleryUploadMode] = useState("upload"); // "upload" | "url"
+  const [galleryUploadFile, setGalleryUploadFile] = useState(null);
+  const [galleryUploadProgress, setGalleryUploadProgress] = useState(0);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [galleryUploadError, setGalleryUploadError] = useState("");
+  const [galleryDragOver, setGalleryDragOver] = useState(false);
+  const galleryFileRef = useRef(null);
+
+  // Upload state — team photo
+  const [teamUploadMode, setTeamUploadMode] = useState("upload"); // "upload" | "url"
+  const [teamUploadFile, setTeamUploadFile] = useState(null);
+  const [teamUploadProgress, setTeamUploadProgress] = useState(0);
+  const [teamUploading, setTeamUploading] = useState(false);
+  const [teamUploadError, setTeamUploadError] = useState("");
+  const [teamDragOver, setTeamDragOver] = useState(false);
+  const teamFileRef = useRef(null);
 
   const [replyFormData, setReplyFormData] = useState({
     subject: "",
@@ -210,31 +229,69 @@ function Admin() {
     }
   };
 
+  // -------------------------------------------------------
+  // Upload a file and return the resolved URL from backend
+  // -------------------------------------------------------
+  const uploadImageToServer = async (file, setProgress, setUploading, setError) => {
+    setUploading(true);
+    setError("");
+    setProgress(0);
+    try {
+      const result = await uploadFile(file, setProgress);
+      return result.url; // e.g. "/static/uploads/uuid_photo.jpg"
+    } catch (err) {
+      setError(err.message);
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleAddGalleryImage = async (e) => {
     e.preventDefault();
 
+    let imageUrl = galleryFormData.image_url;
+
+    // If upload mode and a file was selected but not yet uploaded, upload it now
+    if (galleryUploadMode === "upload" && galleryUploadFile && !galleryFormData.image_url) {
+      const uploaded = await uploadImageToServer(
+        galleryUploadFile,
+        setGalleryUploadProgress,
+        setGalleryUploading,
+        setGalleryUploadError
+      );
+      if (!uploaded) return; // upload failed
+      imageUrl = uploaded;
+    }
+
+    if (!imageUrl) {
+      showNotification("error", "Please upload an image or enter a URL.");
+      return;
+    }
+
     try {
       if (isEditingGallery && editingGalleryId) {
-        // Update existing
         await galleryService.updateGalleryItem(editingGalleryId, {
           title: galleryFormData.title,
           description: galleryFormData.description,
-          image_url: galleryFormData.image_url,
+          image_url: imageUrl,
           is_active: true,
         });
         showNotification("success", "Gallery image updated successfully!");
       } else {
-        // Create new
         await galleryService.createGalleryItem({
           title: galleryFormData.title,
           description: galleryFormData.description,
-          image_url: galleryFormData.image_url,
+          image_url: imageUrl,
           is_active: true,
         });
         showNotification("success", "Image added to gallery successfully!");
       }
 
       setGalleryFormData({ title: "", description: "", image_url: "" });
+      setGalleryUploadFile(null);
+      setGalleryUploadProgress(0);
+      setGalleryUploadError("");
       setShowGalleryForm(false);
       setIsEditingGallery(false);
       setEditingGalleryId(null);
@@ -250,6 +307,11 @@ function Admin() {
       description: item.description || "",
       image_url: item.image_url || "",
     });
+    setGalleryUploadFile(null);
+    setGalleryUploadProgress(0);
+    setGalleryUploadError("");
+    // When editing, default to URL mode so the existing URL is visible
+    setGalleryUploadMode("url");
     setIsEditingGallery(true);
     setEditingGalleryId(item.id);
     setShowGalleryForm(true);
@@ -353,6 +415,52 @@ function Admin() {
     }
   };
 
+  const handleDeleteMessage = async (messageId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this message? This action cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(
+        `${API_URL}/contact/messages/${messageId}`,
+        {
+          method: "DELETE",
+          headers: getHeaders(),
+        }
+      );
+
+      if (!response.ok) {
+        // Safely parse error — server may return HTML (e.g. 405) instead of JSON
+        let errorMsg = `Server error (${response.status})`;
+        try {
+          const contentType = response.headers.get("content-type") || "";
+          if (contentType.includes("application/json")) {
+            const err = await response.json();
+            errorMsg = err.message || err.error || errorMsg;
+          }
+        } catch (_) {
+          // ignore parse failure
+        }
+        throw new Error(errorMsg);
+      }
+
+      await loadMessages();
+
+      showNotification(
+        "success",
+        "Message deleted successfully!"
+      );
+    } catch (error) {
+      showNotification(
+        "error",
+        "Error deleting message: " + error.message
+      );
+    }
+  };
+
+
   // =========================
   // TEAM
   // =========================
@@ -389,15 +497,31 @@ function Admin() {
     e.preventDefault();
 
     try {
+      let photoUrl = teamFormData.photo_url;
+
+      // If upload mode and file selected but URL not yet resolved, upload now
+      if (teamUploadMode === "upload" && teamUploadFile && !teamFormData.photo_url) {
+        const uploaded = await uploadImageToServer(
+          teamUploadFile,
+          setTeamUploadProgress,
+          setTeamUploading,
+          setTeamUploadError
+        );
+        if (!uploaded) return;
+        photoUrl = uploaded;
+      }
+
+      const payload = { ...teamFormData, photo_url: photoUrl };
+
       const method = editingItem ? "PUT" : "POST";
-      const url = editingItem 
-        ? `${API_URL}/team/${editingItem.id}` 
+      const url = editingItem
+        ? `${API_URL}/team/${editingItem.id}`
         : `${API_URL}/team`;
 
       const response = await fetch(url, {
-        method: method,
+        method,
         headers: getHeaders(),
-        body: JSON.stringify(teamFormData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -407,6 +531,9 @@ function Admin() {
 
       setShowTeamForm(false);
       setEditingItem(null);
+      setTeamUploadFile(null);
+      setTeamUploadProgress(0);
+      setTeamUploadError("");
       await loadTeamData();
 
       showNotification(
@@ -428,6 +555,11 @@ function Admin() {
       phone: member.phone || "",
       order: member.order || 0,
     });
+    setTeamUploadFile(null);
+    setTeamUploadProgress(0);
+    setTeamUploadError("");
+    // Default to URL mode when editing so existing URL is visible
+    setTeamUploadMode("url");
     setEditingItem(member);
     setShowTeamForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1328,38 +1460,100 @@ function Admin() {
                     />
                   </div>
 
+                  {/* Image — Upload File only */}
                   <div className="form-group">
-                    <label>Image URL</label>
-                    <input
-                      type="text"
-                      name="image_url"
-                      value={galleryFormData.image_url}
-                      onChange={handleGalleryFormChange}
-                      placeholder="/photo.jpeg or https://example.com/image.jpg"
-                      required
-                    />
+                    <label>Image File</label>
+
+                    <div
+                      className={`drop-zone ${galleryDragOver ? "drag-over" : ""} ${galleryUploadFile ? "has-file" : ""}`}
+                      onDragOver={(e) => { e.preventDefault(); setGalleryDragOver(true); }}
+                      onDragLeave={() => setGalleryDragOver(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setGalleryDragOver(false);
+                        const f = e.dataTransfer.files[0];
+                        if (f) {
+                          setGalleryUploadFile(f);
+                          setGalleryUploadError("");
+                          setGalleryFormData(p => ({ ...p, image_url: "" }));
+                        }
+                      }}
+                      onClick={() => galleryFileRef.current?.click()}
+                    >
+                      <input
+                        ref={galleryFileRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const f = e.target.files[0];
+                          if (f) {
+                            setGalleryUploadFile(f);
+                            setGalleryUploadError("");
+                            setGalleryFormData(p => ({ ...p, image_url: "" }));
+                          }
+                        }}
+                        style={{ display: "none" }}
+                      />
+                      <div className="drop-zone-icon">
+                        {galleryUploadFile ? "✅" : "🖼️"}
+                      </div>
+                      <p>
+                        {galleryUploadFile
+                          ? galleryUploadFile.name
+                          : "Click or drag & drop an image here"}
+                      </p>
+                      {!galleryUploadFile && (
+                        <span className="drop-hint">PNG, JPG, JPEG, WEBP — max 10 MB</span>
+                      )}
+                    </div>
+
+                    {galleryUploading && (
+                      <div className="upload-progress-wrap">
+                        <div className="upload-progress-label">
+                          <span>Uploading…</span>
+                          <span>{galleryUploadProgress}%</span>
+                        </div>
+                        <div className="upload-progress-bar">
+                          <div
+                            className="upload-progress-bar-fill"
+                            style={{ width: `${galleryUploadProgress}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {galleryUploadError && (
+                      <p className="upload-error">⚠️ {galleryUploadError}</p>
+                    )}
+
+                    {/* Preview of selected file */}
+                    {galleryUploadFile && !galleryUploading && (
+                      <div className="upload-preview">
+                        <img
+                          src={URL.createObjectURL(galleryUploadFile)}
+                          alt="Preview"
+                        />
+                        <div className="upload-preview-label">Selected: {galleryUploadFile.name}</div>
+                      </div>
+                    )}
+
+                    {/* Preview of existing image if editing */}
+                    {!galleryUploadFile && galleryFormData.image_url && (
+                      <div className="upload-preview">
+                        <img
+                          src={resolveMediaUrl(galleryFormData.image_url)}
+                          alt="Preview"
+                          onError={(e) => { e.target.style.display = "none"; }}
+                          onLoad={(e) => { e.target.style.display = "block"; }}
+                        />
+                        <div className="upload-preview-label">Current Image</div>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Live image preview */}
-                  {galleryFormData.image_url && (
-                    <div className="gallery-preview">
-                      <p className="preview-label">Preview:</p>
-                      <img
-                        src={galleryFormData.image_url}
-                        alt="Preview"
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                        onLoad={(e) => {
-                          e.target.style.display = "block";
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  <button type="submit" className="primary-btn">
+                  <button type="submit" className="primary-btn" disabled={galleryUploading}>
                     <FaCheck />
-                    {isEditingGallery ? "Update Image" : "Add Image"}
+                    {galleryUploading ? "Uploading…" : isEditingGallery ? "Update Image" : "Add Image"}
                   </button>
 
                 </form>
@@ -1378,7 +1572,7 @@ function Admin() {
                   {galleryItems.map((item) => (
                     <div key={item.id} className="gallery-item">
                       <img
-                        src={item.image_url}
+                        src={resolveMediaUrl(item.image_url)}
                         alt={item.title || "Gallery image"}
                       />
 
@@ -1424,14 +1618,6 @@ function Admin() {
                 Contact Messages (
                 {stats.messageCount})
               </h2>
-
-              <button
-                className="primary-btn"
-                onClick={loadMessages}
-              >
-                <FaBell />
-                Refresh
-              </button>
             </div>
 
             {messages.length === 0 ? (
@@ -1537,6 +1723,20 @@ function Admin() {
                           <FaCheck />
                           Replied
                         </span>
+                      )}
+
+                      {(user?.role === "admin" ||
+                        user?.role === "super_admin") && (
+                        <button
+                          className="delete-btn"
+                          title="Delete Message"
+                          onClick={() =>
+                            handleDeleteMessage(msg.id)
+                          }
+                        >
+                          <FaTrash />
+                          Delete
+                        </button>
                       )}
 
                     </div>
@@ -1732,20 +1932,93 @@ function Admin() {
 
                   <div className="form-group">
                     <label>
-                      Photo URL
+                      Photo
                     </label>
 
-                    <input
-                      type="url"
-                      name="photo_url"
-                      value={
-                        teamFormData.photo_url
-                      }
-                      onChange={
-                        handleTeamFormChange
-                      }
-                      placeholder="https://example.com/photo.jpg"
-                    />
+                    <div
+                      className={`drop-zone ${teamDragOver ? "drag-over" : ""} ${teamUploadFile ? "has-file" : ""}`}
+                      onDragOver={(e) => { e.preventDefault(); setTeamDragOver(true); }}
+                      onDragLeave={() => setTeamDragOver(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setTeamDragOver(false);
+                        const f = e.dataTransfer.files[0];
+                        if (f) {
+                          setTeamUploadFile(f);
+                          setTeamUploadError("");
+                          setTeamFormData(p => ({ ...p, photo_url: "" }));
+                        }
+                      }}
+                      onClick={() => teamFileRef.current?.click()}
+                    >
+                      <input
+                        ref={teamFileRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const f = e.target.files[0];
+                          if (f) {
+                            setTeamUploadFile(f);
+                            setTeamUploadError("");
+                            setTeamFormData(p => ({ ...p, photo_url: "" }));
+                          }
+                        }}
+                        style={{ display: "none" }}
+                      />
+                      <div className="drop-zone-icon">
+                        {teamUploadFile ? "✅" : "👤"}
+                      </div>
+                      <p>
+                        {teamUploadFile
+                          ? teamUploadFile.name
+                          : "Click or drag & drop a photo here"}
+                      </p>
+                      {!teamUploadFile && (
+                        <span className="drop-hint">PNG, JPG, JPEG, WEBP — max 10 MB</span>
+                      )}
+                    </div>
+
+                    {teamUploading && (
+                      <div className="upload-progress-wrap">
+                        <div className="upload-progress-label">
+                          <span>Uploading…</span>
+                          <span>{teamUploadProgress}%</span>
+                        </div>
+                        <div className="upload-progress-bar">
+                          <div
+                            className="upload-progress-bar-fill"
+                            style={{ width: `${teamUploadProgress}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {teamUploadError && (
+                      <p className="upload-error">⚠️ {teamUploadError}</p>
+                    )}
+
+                    {teamUploadFile && !teamUploading && (
+                      <div className="upload-preview">
+                        <img
+                          src={URL.createObjectURL(teamUploadFile)}
+                          alt="Photo preview"
+                        />
+                        <div className="upload-preview-label">Selected: {teamUploadFile.name}</div>
+                      </div>
+                    )}
+
+                    {/* Preview of existing image if editing */}
+                    {!teamUploadFile && teamFormData.photo_url && (
+                      <div className="upload-preview">
+                        <img
+                          src={resolveMediaUrl(teamFormData.photo_url)}
+                          alt="Preview"
+                          onError={(e) => { e.target.style.display = "none"; }}
+                          onLoad={(e) => { e.target.style.display = "block"; }}
+                        />
+                        <div className="upload-preview-label">Current Photo</div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="form-group">
@@ -1787,12 +2060,14 @@ function Admin() {
                   <button
                     type="submit"
                     className="primary-btn"
+                    disabled={teamUploading}
                   >
                     <FaCheck />
-                    {editingItem
-                      ? "Update"
-                      : "Add"}{" "}
-                    Member
+                    {teamUploading
+                      ? "Uploading…"
+                      : editingItem
+                      ? "Update Member"
+                      : "Add Member"}
                   </button>
 
                 </form>
@@ -1823,12 +2098,8 @@ function Admin() {
 
                         {member.photo_url && (
                           <img
-                            src={
-                              member.photo_url
-                            }
-                            alt={
-                              member.full_name
-                            }
+                            src={resolveMediaUrl(member.photo_url)}
+                            alt={member.full_name}
                             className="member-photo"
                           />
                         )}
@@ -2446,21 +2717,20 @@ function Admin() {
 
                   <div className="form-group">
                     <label>
-                      URL
+                      URL / Profile Link
                     </label>
 
                     <input
-                      type="url"
+                      type="text"
                       name="url"
-                      value={
-                        socialFormData.url
-                      }
-                      onChange={
-                        handleSocialFormChange
-                      }
-                      placeholder="https://platform.com/yourprofile"
+                      value={socialFormData.url}
+                      onChange={handleSocialFormChange}
+                      placeholder="https://facebook.com/yourpage or https://wa.me/256700000000"
                       required
                     />
+                    <small style={{ color: '#6b7280', marginTop: '4px', display: 'block' }}>
+                      Accepts any link format — Facebook, WhatsApp, Telegram, X, YouTube, etc.
+                    </small>
                   </div>
 
                   <div className="form-group">

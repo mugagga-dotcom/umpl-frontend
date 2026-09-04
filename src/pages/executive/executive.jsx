@@ -1,46 +1,41 @@
+import { useState, useEffect } from "react";
+import { resolveMediaUrl } from "../../Services/uploadService";
 import "./executive.css";
 
-const members = [
-  {
-   name: "MBABAALI MALISEERI",
-    position: "Chairperson",
-    image: "/chairman.jpeg",
-    paragraph:
-      "I am committed to fostering a culture of professionalism, unity, and excellence among media presenters in Uganda.",
-  },
-  {
-    name: "NDAWULA PETER SIMON",
-    position: "Vice Chairman",
-    image: "/vice chairman.jpeg",
-    paragraph:
-      "I support the Chairperson in promoting professionalism and ethical conduct. I focus on creating opportunities for capacity building and collaboration across the media industry.",
-  },
-  {
-    name: "NABUKENYA LILIAN",
-    position: "Secretary",
-    image: "/Secretary.jpeg",
-    paragraph:
-      "I maintain effective communication and organization within our association. I ensure members are informed, engaged, and supported in their professional development.",
-  },
-  {
-    name: "NALUGWA CONNIE",
-    position: "Treasurer",
-    image: "/treasurer.jpeg",
-    paragraph:
-      "I manage the association's financial resources with transparency and accountability, supporting our initiatives and contributing to sustainable growth.",
-  },
-  {
-    name: "SSEGAWA ISMAEL SUREMAN",
-    position: "Publicity",
-    image: "/publicity.jpeg",
-    paragraph:
-      "I promote our association and its activities to the public and media, ensuring our message is clearly communicated and our visibility grows.",
-  },
-];
-
-
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 function Executive() {
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        const res = await fetch(`${API_URL}/team`);
+        if (res.ok) {
+          const data = await res.json();
+          const teamList = data.team_members || data;
+          if (teamList && teamList.length > 0) {
+            // Map the API fields to the format expected by the component
+            const formatted = teamList.map(member => ({
+              id: member.id,
+              name: member.full_name,
+              position: member.position,
+              image: member.photo_url,
+              paragraph: member.bio,
+            }));
+            setMembers(formatted);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch team:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeam();
+  }, []);
   return (
     <section className="executive">
       <div className="section-header">
@@ -54,8 +49,8 @@ function Executive() {
 
       <div className="executive-grid">
         {members.map((member, index) => (
-          <div className="member-card" key={index}>
-            <img src={member.image} alt={member.name} />
+          <div className="member-card" key={member.id || index}>
+            <img src={resolveMediaUrl(member.image)} alt={member.name} />
             <div className="member-info">
               <h3>{member.name}</h3>
               <h4>{member.position}</h4>

@@ -1,35 +1,10 @@
 import "./about.css";
 import { useState, useEffect } from "react";
+import { resolveMediaUrl } from "../../Services/uploadService";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
-const members = [
-  {
-    name: "MBABAALI MALISEERI",
-    position: "Chairperson",
-    image: "/chairman.jpeg",
-  },
-  {
-    name: "NDAWULA PETER SIMON",
-    position: "Vice Chairman",
-    image: "/vice chairman.jpeg",
-  },
-  {
-    name: "NABUKENYA LILIAN",
-    position: "Secretary",
-    image: "/Secretary.jpeg",
-  },
-  {
-    name: "NALUGWA CONNIE",
-    position: "Treasurer",
-    image: "/treasurer.jpeg",
-  },
-  {
-    name: "SSEGAWA ISMAEL SUREMAN",
-    position: "Publicity Officer",
-    image: "/publicity.jpeg",
-  },
-];
+
 
 const saccoServices = [
   {
@@ -168,6 +143,27 @@ function Sacco() {
 }
 
 function Executive() {
+  const [members, setMembers] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_URL}/team`)
+      .then((res) => res.json())
+      .then((data) => {
+        const teamList = data.team_members || data;
+        if (teamList && teamList.length > 0) {
+          setMembers(
+            teamList.map((m) => ({
+              id: m.id,
+              name: m.full_name,
+              position: m.position,
+              image: m.photo_url,
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="executive">
       <div className="section-header">
@@ -181,8 +177,8 @@ function Executive() {
 
       <div className="executive-grid">
         {members.map((member, index) => (
-          <div className="member-card" key={index}>
-            <img src={member.image} alt={member.name} />
+          <div className="member-card" key={member.id || index}>
+            <img src={resolveMediaUrl(member.image)} alt={member.name} />
             <div className="member-info">
               <h3>{member.name}</h3>
               <h4>{member.position}</h4>
