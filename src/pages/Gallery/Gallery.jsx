@@ -3,7 +3,27 @@ import "./Gallery.css";
 import galleryService from "../../Services/galleryService";
 import { resolveMediaUrl } from "../../Services/uploadService";
 
-
+// Fallback gallery data shown when the backend is unavailable
+const FALLBACK_GALLERY = [
+  {
+    id: 1,
+    title: "UMPL Event",
+    description: "Media presenters gathering and networking.",
+    image_url: "/HERO2.jpg",
+  },
+  {
+    id: 2,
+    title: "Community Outreach",
+    description: "UMPL members participating in community activities.",
+    image_url: "/HERO3.jpg",
+  },
+  {
+    id: 3,
+    title: "Annual Meeting",
+    description: "Discussion on professionalism and ethics in media.",
+    image_url: "/hero.jpeg",
+  },
+];
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
@@ -27,45 +47,17 @@ const Gallery = () => {
           console.error("Failed to fetch gallery:", e);
         }
 
-        // Fetch team members and merge them
-        try {
-          const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
-          const res = await fetch(`${API_URL}/team`);
-          if (res.ok) {
-            const data = await res.json();
-            const teamList = data.team_members || data;
-            if (teamList && teamList.length > 0) {
-              const teamAsGallery = teamList.map(member => ({
-                id: `team-${member.id}`,
-                title: member.full_name,
-                subtitle: member.position,
-                image_url: member.photo_url,
-                description: member.bio
-              }));
-              
-              // Filter out duplicates (if user added same person to both Team and Gallery)
-              const uniqueTeamMembers = teamAsGallery.filter(
-                teamMember => !finalItems.some(
-                  galleryItem => galleryItem.title && galleryItem.title.toLowerCase().trim() === teamMember.title.toLowerCase().trim()
-                )
-              );
-              
-              finalItems = [...finalItems, ...uniqueTeamMembers];
-            }
-          }
-        } catch (e) {
-          console.error("Failed to fetch team for gallery:", e);
-        }
+
 
         if (finalItems.length === 0) {
-          setImages([]);
+          setImages(FALLBACK_GALLERY);
         } else {
           setImages(finalItems);
         }
         setError(null);
       } catch (err) {
         console.error("Failed to fetch data:", err);
-        setImages([]);
+        setImages(FALLBACK_GALLERY);
       } finally {
         setLoading(false);
       }

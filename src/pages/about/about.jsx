@@ -4,6 +4,39 @@ import { resolveMediaUrl } from "../../Services/uploadService";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
+// Fallback executive data shown when backend is unavailable
+const FALLBACK_MEMBERS = [
+  {
+    id: 1,
+    name: "Mbabaali Maliseeri",
+    position: "Chairperson",
+    image: "/chairman.jpeg",
+  },
+  {
+    id: 2,
+    name: "Ndawula Peter Simon",
+    position: "Vice Chairman",
+    image: "/vice chairman.jpeg",
+  },
+  {
+    id: 3,
+    name: "Nalugwa Connie",
+    position: "Treasurer",
+    image: "/treasurer.jpeg",
+  },
+  {
+    id: 4,
+    name: "Nabukenya Lilian",
+    position: "Secretary",
+    image: "/Secretary.jpeg",
+  },
+  {
+    id: 5,
+    name: "Ssegawa Ismael Sureman",
+    position: "Publicity",
+    image: "/publicity.jpeg",
+  },
+];
 
 
 const saccoServices = [
@@ -159,9 +192,15 @@ function Executive() {
               image: m.photo_url,
             }))
           );
+        } else {
+          // API returned empty — use fallback
+          setMembers(FALLBACK_MEMBERS);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // Network error — use fallback so images still display
+        setMembers(FALLBACK_MEMBERS);
+      });
   }, []);
 
   return (

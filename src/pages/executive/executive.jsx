@@ -4,6 +4,45 @@ import "./executive.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
+// Fallback data shown when the backend is unavailable
+const FALLBACK_MEMBERS = [
+  {
+    id: 1,
+    name: "Mbabaali Maliseeri",
+    position: "Chairperson",
+    image: "/chairman.jpeg",
+    paragraph: "I am committed to fostering a culture of professionalism, unity, and excellence among media presenters in Uganda.",
+  },
+  {
+    id: 2,
+    name: "Ndawula Peter Simon",
+    position: "Vice Chairman",
+    image: "/vice chairman.jpeg",
+    paragraph: "I support the Chairperson in promoting professionalism and ethical conduct. I focus on creating opportunities for capacity building and collaboration across the media industry.",
+  },
+  {
+    id: 3,
+    name: "Nalugwa Connie",
+    position: "Treasurer",
+    image: "/treasurer.jpeg",
+    paragraph: "I manage the association's financial resources with transparency and accountability, supporting our initiatives and contributing to sustainable growth.",
+  },
+  {
+    id: 4,
+    name: "Nabukenya Lilian",
+    position: "Secretary",
+    image: "/Secretary.jpeg",
+    paragraph: "I maintain effective communication and organization within our association. I ensure members are informed, engaged, and supported in their professional development.",
+  },
+  {
+    id: 5,
+    name: "Ssegawa Ismael Sureman",
+    position: "Publicity",
+    image: "/publicity.jpeg",
+    paragraph: "I promote our association and its activities to the public and media, ensuring our message is clearly communicated and our visibility grows.",
+  },
+];
+
 function Executive() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,8 +67,12 @@ function Executive() {
             return;
           }
         }
+        // API returned no data — use fallback
+        setMembers(FALLBACK_MEMBERS);
       } catch (err) {
         console.error("Failed to fetch team:", err);
+        // Network error — use fallback so images still display
+        setMembers(FALLBACK_MEMBERS);
       } finally {
         setLoading(false);
       }

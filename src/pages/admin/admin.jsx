@@ -155,6 +155,12 @@ function Admin() {
     site_name: "",
   });
 
+  const [passwordFormData, setPasswordFormData] = useState({
+    old_password: "",
+    new_password: "",
+    confirm_password: "",
+  });
+
   // =========================
   // API URL
   // =========================
@@ -951,6 +957,43 @@ function Admin() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+    if (passwordFormData.new_password !== passwordFormData.confirm_password) {
+      showNotification("error", "New passwords do not match!");
+      return;
+    }
+    
+    try {
+      const response = await fetch(`${API_URL}/auth/change-password`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({
+          old_password: passwordFormData.old_password,
+          new_password: passwordFormData.new_password,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update password");
+      }
+
+      showNotification("success", "Password updated successfully!");
+      setPasswordFormData({ old_password: "", new_password: "", confirm_password: "" });
+    } catch (error) {
+      showNotification("error", error.message);
+    }
   };
 
   const handleContentFormChange = (e) => {
@@ -2883,6 +2926,48 @@ function Admin() {
             </div>
 
             <div className="settings-container">
+
+              <div className="settings-card">
+                <h3>Change Password</h3>
+                <form onSubmit={handleUpdatePassword}>
+                  <div className="form-group">
+                    <label>Current Password</label>
+                    <input
+                      type="password"
+                      name="old_password"
+                      value={passwordFormData.old_password}
+                      onChange={handlePasswordChange}
+                      placeholder="Enter current password"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>New Password</label>
+                    <input
+                      type="password"
+                      name="new_password"
+                      value={passwordFormData.new_password}
+                      onChange={handlePasswordChange}
+                      placeholder="Enter new password"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Confirm New Password</label>
+                    <input
+                      type="password"
+                      name="confirm_password"
+                      value={passwordFormData.confirm_password}
+                      onChange={handlePasswordChange}
+                      placeholder="Confirm new password"
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="primary-btn">
+                    <FaCheck /> Update Password
+                  </button>
+                </form>
+              </div>
 
               <div className="settings-card">
 
