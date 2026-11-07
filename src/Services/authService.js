@@ -7,11 +7,12 @@ import api from './api';
 
 export const authService = {
   // Login user
-  login: async (email, password) => {
+  login: async (email, password, rememberMe = false) => {
     try {
       const response = await api.post('/auth/login', {
         email,
-        password
+        password,
+        remember_me: rememberMe
       });
       return response.data;
     } catch (error) {
