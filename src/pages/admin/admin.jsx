@@ -258,15 +258,18 @@ function Admin() {
 
     let imageUrl = galleryFormData.image_url;
 
-    // If upload mode and a file was selected but not yet uploaded, upload it now
-    if (galleryUploadMode === "upload" && galleryUploadFile && !galleryFormData.image_url) {
+    // Upload file if one is selected, regardless of mode
+    if (galleryUploadFile) {
       const uploaded = await uploadImageToServer(
         galleryUploadFile,
         setGalleryUploadProgress,
         setGalleryUploading,
         setGalleryUploadError
       );
-      if (!uploaded) return; // upload failed
+      if (!uploaded) {
+        showNotification("error", "Failed to upload image");
+        return;
+      }
       imageUrl = uploaded;
     }
 
@@ -316,8 +319,6 @@ function Admin() {
     setGalleryUploadFile(null);
     setGalleryUploadProgress(0);
     setGalleryUploadError("");
-    // When editing, default to URL mode so the existing URL is visible
-    setGalleryUploadMode("url");
     setIsEditingGallery(true);
     setEditingGalleryId(item.id);
     setShowGalleryForm(true);
@@ -505,15 +506,18 @@ function Admin() {
     try {
       let photoUrl = teamFormData.photo_url;
 
-      // If upload mode and file selected but URL not yet resolved, upload now
-      if (teamUploadMode === "upload" && teamUploadFile && !teamFormData.photo_url) {
+      // Upload file if one is selected, regardless of mode
+      if (teamUploadFile) {
         const uploaded = await uploadImageToServer(
           teamUploadFile,
           setTeamUploadProgress,
           setTeamUploading,
           setTeamUploadError
         );
-        if (!uploaded) return;
+        if (!uploaded) {
+          showNotification("error", "Failed to upload image");
+          return;
+        }
         photoUrl = uploaded;
       }
 
@@ -564,8 +568,6 @@ function Admin() {
     setTeamUploadFile(null);
     setTeamUploadProgress(0);
     setTeamUploadError("");
-    // Default to URL mode when editing so existing URL is visible
-    setTeamUploadMode("url");
     setEditingItem(member);
     setShowTeamForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1518,7 +1520,6 @@ function Admin() {
                         if (f) {
                           setGalleryUploadFile(f);
                           setGalleryUploadError("");
-                          setGalleryFormData(p => ({ ...p, image_url: "" }));
                         }
                       }}
                       onClick={() => galleryFileRef.current?.click()}
@@ -1532,7 +1533,6 @@ function Admin() {
                           if (f) {
                             setGalleryUploadFile(f);
                             setGalleryUploadError("");
-                            setGalleryFormData(p => ({ ...p, image_url: "" }));
                           }
                         }}
                         style={{ display: "none" }}
@@ -1989,7 +1989,6 @@ function Admin() {
                         if (f) {
                           setTeamUploadFile(f);
                           setTeamUploadError("");
-                          setTeamFormData(p => ({ ...p, photo_url: "" }));
                         }
                       }}
                       onClick={() => teamFileRef.current?.click()}
@@ -2003,7 +2002,6 @@ function Admin() {
                           if (f) {
                             setTeamUploadFile(f);
                             setTeamUploadError("");
-                            setTeamFormData(p => ({ ...p, photo_url: "" }));
                           }
                         }}
                         style={{ display: "none" }}
@@ -2046,11 +2044,11 @@ function Admin() {
                           src={URL.createObjectURL(teamUploadFile)}
                           alt="Photo preview"
                         />
-                        <div className="upload-preview-label">Selected: {teamUploadFile.name}</div>
+                        <div className="upload-preview-label">New Photo: {teamUploadFile.name}</div>
                       </div>
                     )}
 
-                    {/* Preview of existing image if editing */}
+                    {/* Preview of existing image if editing and no new file selected */}
                     {!teamUploadFile && teamFormData.photo_url && (
                       <div className="upload-preview">
                         <img
